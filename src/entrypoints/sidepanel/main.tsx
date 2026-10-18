@@ -1,4 +1,5 @@
 import "@/utils/zod-config"
+import "@/utils/local-only-guard"
 import type { ThemeMode } from "@/types/config/theme"
 import { Provider as JotaiProvider } from "jotai"
 import { useHydrateAtoms } from "jotai/utils"

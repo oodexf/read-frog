@@ -5,6 +5,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { createContext, use, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { CustomActionContent } from "@/components/custom-action/custom-action-content"
 import { CustomActionToolButton } from "@/components/custom-action/custom-action-tool-button"
+import { SaveToLocalNotesButton } from "@/components/custom-action/save-to-local-notes-button"
 import { SaveToNotebaseButton } from "@/components/custom-action/save-to-notebase-button"
 import { isSaveToNotebaseDialogOpenAtom } from "@/components/custom-action/save-to-notebase-dialog-atom"
 import { SaveToNotebaseDialogHost } from "@/components/custom-action/save-to-notebase-dialog-host"
@@ -20,6 +21,7 @@ import { createSelectionToolbarPrecheckError } from "@/components/ui/selection-p
 import { SelectionToolbarErrorAlert } from "@/components/ui/selection-popover/selection-toolbar-error-alert"
 import { SelectionToolbarFooterContent } from "@/components/ui/selection-popover/selection-toolbar-footer-content"
 import { SelectionToolbarTitleContent } from "@/components/ui/selection-popover/selection-toolbar-title-content"
+import { env } from "@/env"
 import { ANALYTICS_FEATURE, ANALYTICS_SURFACE } from "@/types/analytics"
 import { createFeatureUsageContext, trackFeatureUsed } from "@/utils/analytics"
 import { classifyResolvedProvider, UNKNOWN_FEATURE_PROVIDER } from "@/utils/analytics-provider"
@@ -43,6 +45,7 @@ import {
   selectionAtom,
   selectionSessionAtom,
 } from "../atoms"
+import { LocalReviewDueTab } from "../local-review-due-tab"
 import { ReviewDueTab } from "../review-due-tab"
 import { useSelectionOpenRequestResolver } from "../use-selection-open-request"
 import { useSelectionShortcuts } from "../use-selection-shortcuts"
@@ -460,7 +463,11 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
             />
             <SelectionToolbarErrorAlert error={displayedError} />
           </SelectionPopover.Body>
-          <ReviewDueTab source="extension_custom_ai_action" />
+          {env.WXT_LOCAL_ONLY ? (
+            <LocalReviewDueTab />
+          ) : (
+            <ReviewDueTab source="extension_custom_ai_action" />
+          )}
           <CustomActionFooterContent
             paragraphsText={paragraphsText}
             providers={baseCustomActionProviders}
@@ -471,18 +478,26 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
           >
             {activeAction && (
               <>
-                <SaveToNotebaseButton
-                  action={activeAction}
-                  isRunning={displayedIsRunning}
-                  result={displayedResult}
-                />
+                {env.WXT_LOCAL_ONLY ? (
+                  <SaveToLocalNotesButton
+                    action={activeAction}
+                    isRunning={displayedIsRunning}
+                    result={displayedResult}
+                  />
+                ) : (
+                  <SaveToNotebaseButton
+                    action={activeAction}
+                    isRunning={displayedIsRunning}
+                    result={displayedResult}
+                  />
+                )}
                 <CustomActionToolButton action={activeAction} />
               </>
             )}
           </CustomActionFooterContent>
         </SelectionPopover.Content>
       </SelectionPopover.Root>
-      <SaveToNotebaseDialogHost />
+      {!env.WXT_LOCAL_ONLY && <SaveToNotebaseDialogHost />}
     </SelectionCustomActionContext>
   )
 }

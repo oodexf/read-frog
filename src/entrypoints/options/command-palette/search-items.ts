@@ -1,4 +1,5 @@
 import type { GeneratedI18nStructure } from "#i18n"
+import { env } from "@/env"
 import {
   CUSTOM_ACTION_LAYOUT_SECTION_ID,
   CUSTOM_ACTION_NOTEBASE_SECTION_ID,
@@ -20,7 +21,7 @@ type SearchItemDefinition = Omit<SearchItem, "titleKey" | "descriptionKey" | "pa
   pageKey: I18nKey
 }
 
-export const SEARCH_ITEMS: SearchItem[] = [
+const ALL_SEARCH_ITEMS: SearchItem[] = [
   // Advanced page
   {
     sectionId: "glossary-enabled",
@@ -587,3 +588,14 @@ export const SEARCH_ITEMS: SearchItem[] = [
     pageKey: "options.tts.title",
   },
 ] satisfies SearchItemDefinition[]
+
+// Sections a local-only build leaves out: each depends on Read Frog's own services.
+const LOCAL_ONLY_HIDDEN_SECTION_IDS = new Set<string>([
+  "analytics",
+  "subtitles-ai-quota",
+  CUSTOM_ACTION_NOTEBASE_SECTION_ID,
+])
+
+export const SEARCH_ITEMS: SearchItem[] = env.WXT_LOCAL_ONLY
+  ? ALL_SEARCH_ITEMS.filter((item) => !LOCAL_ONLY_HIDDEN_SECTION_IDS.has(item.sectionId))
+  : ALL_SEARCH_ITEMS

@@ -1,5 +1,6 @@
 import type { HostedAiStatus } from "@/utils/hosted-ai/types"
 import { useQuery } from "@tanstack/react-query"
+import { env } from "@/env"
 import { authClient } from "@/utils/auth/auth-client"
 import { orpc } from "@/utils/orpc/client"
 
@@ -23,7 +24,7 @@ export interface HostedAiStatusResult {
  * their own spend up to a TTL late. The two may briefly disagree; only the
  * background's answer decides whether a hosted call is attempted.
  */
-export function useHostedAiStatus(options: { enabled?: boolean } = {}): HostedAiStatusResult {
+function useRemoteHostedAiStatus(options: { enabled?: boolean } = {}): HostedAiStatusResult {
   const { data: session, isPending: isSessionPending } = authClient.useSession()
   const statusQuery = useQuery(
     orpc.hostedAi.status.queryOptions({
@@ -46,3 +47,20 @@ export function useHostedAiStatus(options: { enabled?: boolean } = {}): HostedAi
     isError: statusQuery.isError,
   }
 }
+
+const LOCAL_ONLY_HOSTED_AI_STATUS: HostedAiStatusResult = {
+  status: undefined,
+  isSignedIn: false,
+  isPending: false,
+  isError: false,
+}
+
+// A local-only build has no account and no hosted AI to ask about. The choice is
+// fixed at build time, so every render calls the same hooks.
+function useLocalOnlyHostedAiStatus(_options: { enabled?: boolean } = {}): HostedAiStatusResult {
+  return LOCAL_ONLY_HOSTED_AI_STATUS
+}
+
+export const useHostedAiStatus = env.WXT_LOCAL_ONLY
+  ? useLocalOnlyHostedAiStatus
+  : useRemoteHostedAiStatus

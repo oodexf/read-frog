@@ -1,3 +1,4 @@
+import "@/utils/local-only-guard"
 import { onMessage } from "@/utils/message"
 import { DOMAudioPlaybackController } from "@/utils/tts-playback/dom-audio-controller"
 

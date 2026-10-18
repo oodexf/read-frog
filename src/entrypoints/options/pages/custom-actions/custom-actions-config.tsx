@@ -1,6 +1,7 @@
 import { useSetAtom, useStore } from "jotai"
 import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router"
+import { env } from "@/env"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
 import { isBuiltInActionId } from "@/utils/constants/custom-action"
 import { i18n } from "@/utils/i18n"
@@ -57,7 +58,8 @@ export function CustomActionsConfig() {
       description={
         <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
           {i18n.t("options.selectionToolbar.customActions.description")}
-          <IntroVideoButton />
+          {/* The film streams from the official site. */}
+          {!env.WXT_LOCAL_ONLY && <IntroVideoButton />}
         </span>
       }
     >

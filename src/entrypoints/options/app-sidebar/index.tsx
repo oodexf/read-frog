@@ -9,6 +9,7 @@ import {
   SidebarHeader,
 } from "@/components/ui/base-ui/sidebar"
 import { UserAccountMenuSidebar } from "@/components/user-account-menu"
+import { env } from "@/env"
 import { i18n } from "@/utils/i18n"
 import { getCommandPaletteShortcutHint } from "@/utils/os"
 import { commandPaletteOpenAtom } from "../command-palette/atoms"
@@ -25,7 +26,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="transition-all group-data-[state=expanded]:px-5 group-data-[state=expanded]:pt-4">
-        <UserAccountMenuSidebar />
+        {!env.WXT_LOCAL_ONLY && <UserAccountMenuSidebar />}
         <InputGroup onClick={() => setCommandPaletteOpen(true)} className="bg-background">
           <InputGroupInput
             readOnly
@@ -45,9 +46,12 @@ export function AppSidebar() {
         <FeaturesNav />
         <ProductNav />
       </SidebarContent>
-      <SidebarFooter className="transition-all group-data-[state=expanded]:px-2">
-        <WhatsNewFooter />
-      </SidebarFooter>
+      {/* What's new reads the official blog, which a local-only build never contacts. */}
+      {!env.WXT_LOCAL_ONLY && (
+        <SidebarFooter className="transition-all group-data-[state=expanded]:px-2">
+          <WhatsNewFooter />
+        </SidebarFooter>
+      )}
       <CollapseToggle />
     </Sidebar>
   )

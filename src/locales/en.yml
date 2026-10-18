@@ -2060,3 +2060,39 @@ languages:
   wls: Wallisian
   rar: Rarotongan
   hif: Fiji Hindi
+localNotes:
+  nextCardIn: "Next card in $1"
+  waitingDescription: Cards you are still learning come back after a short wait. Keep this page open, or come back later.
+  cancel: Cancel
+  noteSuggestionSettingDescription: After selection translation with an AI provider, suggest words to save to your notes
+  title: Notes
+  pageDescription: Results you saved from the selection toolbar, with their review schedule. They are stored in this browser only.
+  save: Save note
+  saving: Saving...
+  saved: Saved to notes
+  saveFailed: Failed to save the note
+  nothingToSave: This result has nothing to save
+  suggestionDescription: Choose which words to save to your notes and review anytime.
+  empty: No notes yet. Save a Custom AI Action result or a note suggestion and it shows up here.
+  allActions: All actions
+  count: "$1 notes"
+  review: Review
+  reviewWithCount: "Review ($1)"
+  exportCsv: Export CSV
+  exportJson: Export JSON
+  delete: Delete
+  deleteAll: Delete all
+  deleteAllConfirm: Delete all notes and their review history? This cannot be undone.
+  dueNow: Due now
+  dueOn: "Due $1"
+  openSource: Open source page
+  reviewDescription: Recall the answer, then rate how well you remembered it. The rating decides when the card comes back.
+  showAnswer: Show answer
+  gradeAgain: Again
+  gradeHard: Hard
+  gradeGood: Good
+  gradeEasy: Easy
+  remaining: "$1 left"
+  reviewDone: All caught up
+  reviewDoneDescription: No cards are due right now. Come back later.
+  backToNotes: Back to notes

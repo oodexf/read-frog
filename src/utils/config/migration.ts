@@ -5,6 +5,7 @@ import { i18n } from "@/utils/i18n"
 import { CONFIG_SCHEMA_VERSION } from "../constants/config"
 import { logger } from "../logger"
 import { ConfigVersionTooNewError } from "./errors"
+import { replaceBuiltInAiProviders } from "./local-only"
 
 export const LATEST_SCHEMA_VERSION = CONFIG_SCHEMA_VERSION
 
@@ -122,7 +123,7 @@ export async function migrateConfig(
     }
   }
 
-  const parseResult = configSchema.safeParse(originalConfig)
+  const parseResult = configSchema.safeParse(replaceBuiltInAiProviders(originalConfig as Config))
   if (!parseResult.success) {
     throw new Error(
       `${i18n.t("options.configMigration.validationError")}: ${parseResult.error.message}`,

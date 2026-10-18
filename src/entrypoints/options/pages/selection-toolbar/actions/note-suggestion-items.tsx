@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/base-ui/select"
 import { Switch } from "@/components/ui/base-ui/switch"
+import { env } from "@/env"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
 import { getSelectionToolbarActions, resolveNoteSuggestionAction } from "@/utils/custom-actions"
 import { i18n } from "@/utils/i18n"
@@ -42,7 +43,11 @@ export function NoteSuggestionItems() {
       <ConfigItem
         id="selection-toolbar-note-suggestion"
         title={i18n.t("options.selectionToolbar.actions.noteSuggestion.title")}
-        description={i18n.t("options.selectionToolbar.actions.noteSuggestion.description")}
+        description={
+          env.WXT_LOCAL_ONLY
+            ? i18n.t("localNotes.noteSuggestionSettingDescription")
+            : i18n.t("options.selectionToolbar.actions.noteSuggestion.description")
+        }
       >
         <Switch
           checked={selectionToolbar.noteSuggestion.enabled}

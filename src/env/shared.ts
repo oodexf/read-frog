@@ -83,6 +83,37 @@ export function isLocalPackagesEnabled(rawEnv: RawExtensionEnv) {
   return rawBooleanSchema.parse(rawEnv.WXT_USE_LOCAL_PACKAGES) ?? false
 }
 
+/**
+ * A local-only build never contacts Read Frog's own services: the account, hosted
+ * AI, notebase and blog requests are refused before they leave the browser, usage
+ * analytics never starts, and the official-site integrations are left out.
+ */
+export function isLocalOnlyEnabled(rawEnv: RawExtensionEnv) {
+  return rawBooleanSchema.parse(rawEnv.WXT_LOCAL_ONLY) ?? false
+}
+
+/**
+ * Bundled into the extension whenever they are set, so a local-only build refuses
+ * them outright rather than shipping an analytics key it promises not to use.
+ */
+export const LOCAL_ONLY_FORBIDDEN_ENV_KEYS = ["WXT_POSTHOG_HOST", "WXT_POSTHOG_API_KEY"] as const
+
+export function assertLocalOnlyEnv(rawEnv: RawExtensionEnv) {
+  if (!isLocalOnlyEnabled(rawEnv)) return
+
+  const presentKeys = LOCAL_ONLY_FORBIDDEN_ENV_KEYS.filter((key) => {
+    const value = rawEnv[key]
+    return value !== undefined && value !== ""
+  })
+
+  if (presentKeys.length > 0) {
+    throw new Error(
+      `WXT_LOCAL_ONLY=true cannot be combined with ${presentKeys.join(", ")}. ` +
+        "Unset them before building.",
+    )
+  }
+}
+
 // With local packages, the aliased layout engine source lives in the monorepo
 // and imports these (its peer dependencies) from there. Vite must resolve them
 // from here instead, or the bundle and the tests get a second React or
@@ -114,8 +145,13 @@ export function resolveExtensionEnv(rawEnv: RawExtensionEnv) {
   }
 }
 
-export function createExtensionClientEnvSchema(isProd: boolean, skipRequiredProductionEnv = false) {
+export function createExtensionClientEnvSchema(
+  isProd: boolean,
+  skipRequiredProductionEnv = false,
+  localOnly = false,
+) {
   const requiresProductionEnv = isProd && !skipRequiredProductionEnv
+  const requiresAnalyticsEnv = requiresProductionEnv && !localOnly
 
   return {
     WXT_API_URL: strictUrlSchema,
@@ -127,9 +163,10 @@ export function createExtensionClientEnvSchema(isProd: boolean, skipRequiredProd
       .string()
       .transform((value, ctx) => parseCommaSeparatedEntries(value, ctx, strictCookieDomainSchema)),
     WXT_GOOGLE_CLIENT_ID: requiresProductionEnv ? z.string().min(1) : optionalNonEmptyStringSchema,
-    WXT_POSTHOG_HOST: requiresProductionEnv ? strictUrlSchema : optionalStrictUrlSchema,
-    WXT_POSTHOG_API_KEY: requiresProductionEnv ? z.string().min(1) : optionalNonEmptyStringSchema,
+    WXT_POSTHOG_HOST: requiresAnalyticsEnv ? strictUrlSchema : optionalStrictUrlSchema,
+    WXT_POSTHOG_API_KEY: requiresAnalyticsEnv ? z.string().min(1) : optionalNonEmptyStringSchema,
     WXT_POSTHOG_TEST_UUID: optionalNonEmptyStringSchema,
     WXT_ANALYTICS_DAILY_FEATURE_CACHE_ENABLED: rawBooleanSchema.default(false),
+    WXT_LOCAL_ONLY: rawBooleanSchema.default(false),
   } satisfies Record<string, z.ZodType>
 }

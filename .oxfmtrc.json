@@ -30,6 +30,7 @@
   "sortImports": {
     "groups": [
       "setup",
+      "local-only-guard",
       "type-import",
       ["type-parent", "type-sibling", "type-index", "type-internal"],
       "value-builtin",
@@ -43,6 +44,10 @@
       {
         "groupName": "setup",
         "elementNamePattern": ["@/utils/zod-config"]
+      },
+      {
+        "groupName": "local-only-guard",
+        "elementNamePattern": ["./local-only-guard", "@/utils/local-only-guard"]
       }
     ],
     "newlinesBetween": false,

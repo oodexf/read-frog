@@ -3,7 +3,7 @@ import type { NoteSuggestionNoteRecord } from "@/utils/note-suggestion/types"
 import { IconBookmarkPlus } from "@tabler/icons-react"
 import { useAtom } from "jotai"
 import { useEffect, useId, useRef, useState } from "react"
-import { useSaveToNotebase } from "@/components/custom-action/use-save-to-notebase"
+import { useSaveNotes } from "@/components/custom-action/use-save-notes"
 import { Button } from "@/components/ui/base-ui/button"
 import { Checkbox } from "@/components/ui/base-ui/checkbox"
 import {
@@ -16,6 +16,7 @@ import {
 import { Label } from "@/components/ui/base-ui/label"
 import { Switch } from "@/components/ui/base-ui/switch"
 import { toastManager } from "@/components/ui/base-ui/toast"
+import { env } from "@/env"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
 import { findSelectionToolbarAction } from "@/utils/custom-actions"
 import { i18n } from "@/utils/i18n"
@@ -82,7 +83,7 @@ export function NoteSuggestionCard({
 }) {
   const { sessionKey, validated, actionSnapshot, firedAt, analyticsProvider } = suggestion
   const [selectionToolbar, setSelectionToolbar] = useAtom(configFieldsAtomMap.selectionToolbar)
-  const { save, isSaving } = useSaveToNotebase()
+  const { save, isSaving } = useSaveNotes()
   const [saveState, setSaveState] = useState<"idle" | "saved" | "stale">("idle")
   // Save re-enables after a failed save or a dismissed dialog; a retry is not
   // another acceptance.
@@ -195,7 +196,11 @@ export function NoteSuggestionCard({
           </Label>
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">{i18n.t("noteSuggestion.description")}</p>
+      <p className="text-xs text-muted-foreground">
+        {env.WXT_LOCAL_ONLY
+          ? i18n.t("localNotes.suggestionDescription")
+          : i18n.t("noteSuggestion.description")}
+      </p>
       <div className="space-y-1">
         {validated.notes.map((note, index) => (
           <NoteRow

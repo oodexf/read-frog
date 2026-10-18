@@ -19,6 +19,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/base-ui/sidebar"
+import { env } from "@/env"
 import { TRANSLATION_HUB_PAGE_PATH } from "@/utils/constants/translation-hub"
 import { i18n } from "@/utils/i18n"
 
@@ -56,6 +57,19 @@ export function FeaturesNav() {
               <span>{i18n.t("options.selectionToolbar.customActions.title")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
+          {env.WXT_LOCAL_ONLY && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                render={<Link to="/notes" />}
+                isActive={pathname.startsWith("/notes")}
+                tooltip={i18n.t("localNotes.title")}
+              >
+                <Icon icon="tabler:notebook" />
+                <span>{i18n.t("localNotes.title")}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
 
           <CollapsibleNavGroup active={isTranslationActive}>
             <SidebarMenuItem>

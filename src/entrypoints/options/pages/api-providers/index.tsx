@@ -1,3 +1,4 @@
+import { env } from "@/env"
 import { i18n } from "@/utils/i18n"
 import { PageLayout } from "../../components/page-layout"
 import { AIContentAwareConfig } from "./ai-content-aware"
@@ -17,7 +18,7 @@ export function ApiProvidersPage() {
       <FeatureProvidersConfig />
       <LanguageDetectionConfig />
       <AIContentAwareConfig />
-      <BuiltInAiUsageConfig />
+      {!env.WXT_LOCAL_ONLY && <BuiltInAiUsageConfig />}
     </PageLayout>
   )
 }

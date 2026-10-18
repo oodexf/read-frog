@@ -1,5 +1,6 @@
 import { Icon } from "@iconify/react"
 import { UserAccountMenuPopup } from "@/components/user-account-menu"
+import { env } from "@/env"
 import { i18n } from "@/utils/i18n"
 import { openOptionsPage } from "@/utils/navigation"
 import { version } from "../../../package.json"
@@ -27,11 +28,12 @@ function App() {
               whatever is left of the 320px popup is its width, and a long display
               name ellipses inside that instead of pushing the icons off. */}
           <div className="flex items-center justify-between gap-2">
-            <UserAccountMenuPopup />
-            <div className="flex shrink-0 items-center">
+            {!env.WXT_LOCAL_ONLY && <UserAccountMenuPopup />}
+            {/* ml-auto keeps the icons on the right when there is no account menu. */}
+            <div className="ml-auto flex shrink-0 items-center">
               <TranslationHubButton />
               <DiscordButton />
-              <BlogNotification />
+              {!env.WXT_LOCAL_ONLY && <BlogNotification />}
             </div>
           </div>
           <LanguageOptionsSelector />

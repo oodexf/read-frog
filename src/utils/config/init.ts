@@ -11,6 +11,7 @@ import {
   DEFAULT_CONFIG,
 } from "../constants/config"
 import { logger } from "../logger"
+import { replaceBuiltInAiProviders } from "./local-only"
 import { runMigration } from "./migration"
 
 export interface InitializeConfigResult {
@@ -60,6 +61,10 @@ export async function initializeConfig(): Promise<InitializeConfigResult> {
       currentVersion = nextVersion
     }
   }
+
+  const localConfig = replaceBuiltInAiProviders(config)
+  didConfigChange = didConfigChange || localConfig !== config
+  config = localConfig
 
   const parsedConfig = configSchema.safeParse(config)
   if (parsedConfig.success) {

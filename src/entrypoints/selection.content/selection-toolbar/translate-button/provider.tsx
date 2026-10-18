@@ -34,6 +34,7 @@ import {
 import { SelectionToolbarErrorAlert } from "@/components/ui/selection-popover/selection-toolbar-error-alert"
 import { SelectionToolbarFooterContent } from "@/components/ui/selection-popover/selection-toolbar-footer-content"
 import { SelectionToolbarTitleContent } from "@/components/ui/selection-popover/selection-toolbar-title-content"
+import { env } from "@/env"
 import { ANALYTICS_FEATURE, ANALYTICS_SURFACE } from "@/types/analytics"
 import { isLLMProviderConfig, isTranslateProviderConfig } from "@/types/config/provider"
 import { createFeatureUsageContext, trackFeatureUsed } from "@/utils/analytics"
@@ -65,6 +66,7 @@ import {
   selectionSessionAtom,
   selectionToolbarTranslateRequestAtom,
 } from "../atoms"
+import { LocalReviewDueTab } from "../local-review-due-tab"
 import { NoteSuggestionCard } from "../note-suggestion/note-suggestion-card"
 import { useNoteSuggestion } from "../note-suggestion/use-note-suggestion"
 import { ReviewDueTab } from "../review-due-tab"
@@ -907,7 +909,11 @@ export function SelectionTranslationProvider({ children }: { children: ReactNode
               )}
             <SelectionToolbarErrorAlert error={error} className="-mt-3" />
           </SelectionPopover.Body>
-          <ReviewDueTab source="extension_selection_translation" />
+          {env.WXT_LOCAL_ONLY ? (
+            <LocalReviewDueTab />
+          ) : (
+            <ReviewDueTab source="extension_selection_translation" />
+          )}
           <TranslateFooterContent
             paragraphsText={paragraphsText}
             providers={translateProviders}

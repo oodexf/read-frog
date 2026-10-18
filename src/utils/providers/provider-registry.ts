@@ -7,6 +7,7 @@ import type {
   SystemProviderSelectorItem,
 } from "@/utils/providers/provider-display"
 import readFrogLogo from "@/assets/providers/read-frog-provider.png?url&no-inline"
+import { env } from "@/env"
 import { isLLMProviderConfig, isTranslateProviderConfig } from "@/types/config/provider"
 import {
   BUILT_IN_AI_PROVIDER_ID,
@@ -97,6 +98,9 @@ const SYSTEM_PROVIDER_DEFS = {
 } as const satisfies Record<string, SystemProviderDef>
 
 function getSystemProviderDefs(): SystemProviderDef[] {
+  // A local-only build has no hosted AI: the built-ins are never offered,
+  // resolved or accepted as a valid provider id.
+  if (env.WXT_LOCAL_ONLY) return []
   return Object.values(SYSTEM_PROVIDER_DEFS)
 }
 

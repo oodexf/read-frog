@@ -1923,3 +1923,39 @@ languages:
   wls: 瓦利斯語
   rar: 庫克群島毛利語
   hif: 斐濟印地語
+localNotes:
+  nextCardIn: "$1 後出現下一張"
+  waitingDescription: 正在學習的卡片會在短暫間隔後再次出現。可以保持頁面開啟，或稍後再來。
+  cancel: 取消
+  noteSuggestionSettingDescription: 用 AI 服務商劃詞翻譯後，推薦值得儲存到筆記的詞
+  title: 筆記
+  pageDescription: 從劃詞工具列儲存的結果及其複習進度。只儲存在這個瀏覽器裡。
+  save: 儲存筆記
+  saving: 儲存中...
+  saved: 已儲存到筆記
+  saveFailed: 儲存筆記失敗
+  nothingToSave: 這個結果沒有可儲存的內容
+  suggestionDescription: 選擇要儲存到筆記的詞，隨時複習。
+  empty: 還沒有筆記。儲存自訂 AI 動作的結果或筆記建議後，會出現在這裡。
+  allActions: 全部動作
+  count: "$1 則筆記"
+  review: 複習
+  reviewWithCount: "複習（$1）"
+  exportCsv: 匯出 CSV
+  exportJson: 匯出 JSON
+  delete: 刪除
+  deleteAll: 全部刪除
+  deleteAllConfirm: 刪除所有筆記及其複習紀錄？此操作無法復原。
+  dueNow: 現在複習
+  dueOn: "$1 複習"
+  openSource: 開啟來源頁面
+  reviewDescription: 先回想答案，再評價記得怎麼樣。評價決定這張卡片下次什麼時候出現。
+  showAnswer: 顯示答案
+  gradeAgain: 忘記
+  gradeHard: 困難
+  gradeGood: 記得
+  gradeEasy: 簡單
+  remaining: "剩餘 $1 張"
+  reviewDone: 全部複習完了
+  reviewDoneDescription: 現在沒有需要複習的卡片，晚點再來。
+  backToNotes: 返回筆記

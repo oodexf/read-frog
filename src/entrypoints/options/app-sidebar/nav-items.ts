@@ -15,6 +15,9 @@ export const ROUTE_DEFS = [
   // so links made before that change still land somewhere.
   { path: "/advanced" },
   { path: "/help-and-community" },
+  // Local notes (WXT_LOCAL_ONLY). Routed in every build, linked only from the local-only sidebar.
+  { path: "/notes" },
+  { path: "/notes/review" },
 
   // Detail pages drilled into from a `ConfigNavItem`. They own no sidebar entry — the
   // sidebar lists its links itself — but route exactly like any other page.

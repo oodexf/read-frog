@@ -51,6 +51,14 @@ const GlossaryEditorPage = lazy(() =>
 function AdvancedRedirect() {
   return <Navigate to="/advanced/glossary" replace />
 }
+const LocalNotesPage = lazy(() =>
+  import("./pages/local-notes").then((module) => ({ default: module.LocalNotesPage })),
+)
+const LocalNotesReviewPage = lazy(() =>
+  import("./pages/local-notes/review-page").then((module) => ({
+    default: module.LocalNotesReviewPage,
+  })),
+)
 const HelpAndCommunityPage = lazy(() =>
   import("./pages/help-and-community").then((module) => ({ default: module.HelpAndCommunityPage })),
 )
@@ -135,6 +143,8 @@ const ROUTE_COMPONENTS: Record<RoutePath, ComponentType> = {
   "/tts": TextToSpeechPage,
   "/advanced": AdvancedRedirect,
   "/help-and-community": HelpAndCommunityPage,
+  "/notes": LocalNotesPage,
+  "/notes/review": LocalNotesReviewPage,
   "/advanced/glossary": GlossaryPage,
   "/advanced/glossary/:glossaryId": GlossaryEditorPage,
   "/preference/config-backup": ConfigBackupPage,

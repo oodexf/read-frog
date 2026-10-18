@@ -1,6 +1,8 @@
 import { browser } from "#imports"
+import { env } from "@/env"
 import { EXTENSION_VERSION } from "@/utils/constants/app"
 import { i18n } from "@/utils/i18n"
+import { logger } from "@/utils/logger"
 
 const EDGE_VERSION_RE = /Edg(?:e|A|iOS)?\/([\d.]+)/i
 const EDGE_LEGACY_VERSION_RE = /Edge\/([\d.]+)/i
@@ -52,6 +54,16 @@ function getUILang(): string {
 }
 
 export async function setupUninstallSurvey() {
+  // The survey reports the extension and browser versions to a hosted form.
+  // The browser keeps an uninstall URL across updates, so one set by an earlier
+  // official build is cleared, not just left unset.
+  if (env.WXT_LOCAL_ONLY) {
+    await browser.runtime.setUninstallURL("").catch((error: unknown) => {
+      logger.warn("[UninstallSurvey] Could not clear the uninstall URL", error)
+    })
+    return
+  }
+
   const surveyUrl = i18n.t("uninstallSurveyUrl")
   const browserType = import.meta.env.BROWSER
 
