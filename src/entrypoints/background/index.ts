@@ -1,4 +1,5 @@
 import "@/utils/zod-config"
+import "./local-only-guard"
 import type { Config, UiLanguage } from "@/types/config/config"
 import { browser, defineBackground } from "#imports"
 import { env } from "@/env"
@@ -56,7 +57,8 @@ export default defineBackground({
 
       // Open tutorial page when extension is installed. `from=install` tells
       // fresh installs apart from other visits in the website's guide analytics.
-      if (details.reason === "install") {
+      // The tutorial lives on the official website, so local-only builds skip it.
+      if (details.reason === "install" && !env.WXT_LOCAL_ONLY) {
         await browser.tabs.create({
           url: `${env.WXT_WEBSITE_URL}/guide/step-1?from=install`,
         })

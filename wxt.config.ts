@@ -4,7 +4,9 @@ import ViteYaml from "@modyfi/vite-plugin-yaml"
 import { defineConfig } from "wxt"
 import { z } from "zod"
 import {
+  assertLocalOnlyEnv,
   createExtensionClientEnvSchema,
+  isLocalOnlyEnabled,
   isLocalPackagesEnabled,
   LOCAL_PACKAGES_DEDUPE,
   resolveExtensionEnv,
@@ -14,6 +16,10 @@ const WXT_API_KEY_PATTERN = /^WXT_.*API_KEY/
 const ALLOWED_BUNDLED_API_KEYS = new Set(["WXT_POSTHOG_API_KEY"])
 const useLocalPackages = isLocalPackagesEnabled(process.env)
 const shouldSkipEnvValidation = process.env.WXT_SKIP_ENV_VALIDATION === "true"
+const localOnly = isLocalOnlyEnabled(process.env)
+assertLocalOnlyEnv(process.env)
+// Content scripts that exist only to talk to the official website.
+const OFFICIAL_SITE_ENTRYPOINTS = new Set(["guide"])
 // Root of the read-frog monorepo whose source is aliased in when developing
 // with local packages. Defaults to the sibling checkout; override with
 // WXT_MONOREPO_PATH to point at a git worktree (relative or absolute).
@@ -54,7 +60,8 @@ export default defineConfig({
       "unlimitedStorage",
       "tabs",
       "alarms",
-      "cookies",
+      // Only watched to notice sign-ins on the official site.
+      ...(localOnly ? [] : ["cookies"]),
       "contextMenus",
       "identity",
       "scripting",
@@ -96,6 +103,12 @@ export default defineConfig({
     excludeSources: ["docs/**/*", "assets/**/*", "repos/**/*", "readmes/**/*"],
   },
   hooks: {
+    "entrypoints:resolved": (_wxt, entrypoints) => {
+      if (!localOnly) return
+      // WXT builds from this same array, so it is filtered in place.
+      const kept = entrypoints.filter((entry) => !OFFICIAL_SITE_ENTRYPOINTS.has(entry.name))
+      entrypoints.splice(0, entrypoints.length, ...kept)
+    },
     // With local packages the bundle holds @read-frog/layout-engine's readable
     // source, which must never leave this machine.
     "zip:start": () => {
@@ -167,6 +180,7 @@ export default defineConfig({
                   createExtensionClientEnvSchema(
                     configEnv.mode === "production",
                     shouldSkipEnvValidation,
+                    localOnly,
                   ),
                 ).parse(resolveExtensionEnv(process.env))
 

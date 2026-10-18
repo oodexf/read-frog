@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 import {
+  assertLocalOnlyEnv,
   createExtensionClientEnvSchema,
+  isLocalOnlyEnabled,
   LOCAL_EXTENSION_ENV_DEFAULTS,
   PRODUCTION_EXTENSION_ENV_DEFAULTS,
   resolveExtensionEnv,
@@ -17,9 +19,10 @@ function parseResolvedExtensionEnv(
   rawEnv: Record<string, string | boolean | undefined>,
   isProd = false,
   skipRequiredProductionEnv = false,
+  localOnly = false,
 ) {
   return z
-    .object(createExtensionClientEnvSchema(isProd, skipRequiredProductionEnv))
+    .object(createExtensionClientEnvSchema(isProd, skipRequiredProductionEnv, localOnly))
     .parse(resolveExtensionEnv(rawEnv))
 }
 
@@ -94,6 +97,7 @@ describe("extension env parsing", () => {
       WXT_POSTHOG_API_KEY: undefined,
       WXT_POSTHOG_TEST_UUID: undefined,
       WXT_ANALYTICS_DAILY_FEATURE_CACHE_ENABLED: false,
+      WXT_LOCAL_ONLY: false,
     })
   })
 
@@ -165,6 +169,7 @@ describe("extension env parsing", () => {
       WXT_POSTHOG_API_KEY: PRODUCTION_REQUIRED_ENV.WXT_POSTHOG_API_KEY,
       WXT_POSTHOG_TEST_UUID: undefined,
       WXT_ANALYTICS_DAILY_FEATURE_CACHE_ENABLED: false,
+      WXT_LOCAL_ONLY: false,
     })
   })
 
@@ -187,6 +192,7 @@ describe("extension env parsing", () => {
       WXT_POSTHOG_API_KEY: undefined,
       WXT_POSTHOG_TEST_UUID: undefined,
       WXT_ANALYTICS_DAILY_FEATURE_CACHE_ENABLED: false,
+      WXT_LOCAL_ONLY: false,
     })
   })
 
@@ -223,5 +229,51 @@ describe("extension env parsing", () => {
         WXT_ANALYTICS_DAILY_FEATURE_CACHE_ENABLED: "yes",
       }),
     ).toThrowError(/Invalid/)
+  })
+})
+
+describe("local-only env", () => {
+  it("parses WXT_LOCAL_ONLY strictly and defaults it off", () => {
+    expect(isLocalOnlyEnabled({})).toBe(false)
+    expect(isLocalOnlyEnabled({ WXT_LOCAL_ONLY: "true" })).toBe(true)
+    expect(isLocalOnlyEnabled({ WXT_LOCAL_ONLY: "false" })).toBe(false)
+    expect(() => isLocalOnlyEnabled({ WXT_LOCAL_ONLY: "yes" })).toThrowError(/Invalid/)
+    expect(parseResolvedExtensionEnv({ WXT_LOCAL_ONLY: "true" }).WXT_LOCAL_ONLY).toBe(true)
+  })
+
+  it("does not require PostHog env vars in a local-only production build", () => {
+    const parsed = parseResolvedExtensionEnv(
+      { WXT_GOOGLE_CLIENT_ID: PRODUCTION_REQUIRED_ENV.WXT_GOOGLE_CLIENT_ID },
+      true,
+      false,
+      true,
+    )
+
+    expect(parsed.WXT_GOOGLE_CLIENT_ID).toBe(PRODUCTION_REQUIRED_ENV.WXT_GOOGLE_CLIENT_ID)
+    expect(parsed.WXT_POSTHOG_HOST).toBeUndefined()
+    expect(parsed.WXT_POSTHOG_API_KEY).toBeUndefined()
+  })
+
+  it("still requires the Google client id in a local-only production build", () => {
+    expect(() => parseResolvedExtensionEnv({}, true, false, true)).toThrowError(
+      "expected string, received undefined",
+    )
+  })
+
+  it("refuses analytics env vars in a local-only build", () => {
+    expect(() =>
+      assertLocalOnlyEnv({
+        WXT_LOCAL_ONLY: "true",
+        WXT_POSTHOG_HOST: PRODUCTION_REQUIRED_ENV.WXT_POSTHOG_HOST,
+        WXT_POSTHOG_API_KEY: PRODUCTION_REQUIRED_ENV.WXT_POSTHOG_API_KEY,
+      }),
+    ).toThrowError("WXT_POSTHOG_HOST, WXT_POSTHOG_API_KEY")
+  })
+
+  it("allows analytics env vars when local-only is off and empty ones when it is on", () => {
+    expect(() => assertLocalOnlyEnv({ ...PRODUCTION_REQUIRED_ENV })).not.toThrow()
+    expect(() =>
+      assertLocalOnlyEnv({ WXT_LOCAL_ONLY: "true", WXT_POSTHOG_API_KEY: "" }),
+    ).not.toThrow()
   })
 })

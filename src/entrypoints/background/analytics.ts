@@ -167,11 +167,15 @@ function createDefaultRuntime(): BackgroundAnalyticsRuntime {
   const getStorageItem = (key: LocalStorageKey) => storage.getItem(key)
   const setStorageItem = (key: LocalStorageKey, value: unknown) => storage.setItem(key, value)
 
+  // Local-only builds never start PostHog, whatever the stored opt-in says. The
+  // build already refuses analytics env vars; this keeps a stray one inert.
+  const localOnly = env.WXT_LOCAL_ONLY
+
   return {
-    apiHost: env.WXT_POSTHOG_HOST,
-    apiKey: env.WXT_POSTHOG_API_KEY,
+    apiHost: localOnly ? undefined : env.WXT_POSTHOG_HOST,
+    apiKey: localOnly ? undefined : env.WXT_POSTHOG_API_KEY,
     createDistinctId: () => getRandomUUID(),
-    defaultAnalyticsEnabled: DEFAULT_ANALYTICS_ENABLED,
+    defaultAnalyticsEnabled: !localOnly && DEFAULT_ANALYTICS_ENABLED,
     distinctIdOverride: resolveDistinctIdOverride(env.WXT_POSTHOG_TEST_UUID, import.meta.env.DEV),
     extensionVersion: EXTENSION_VERSION,
     featureUsageCache: env.WXT_ANALYTICS_DAILY_FEATURE_CACHE_ENABLED

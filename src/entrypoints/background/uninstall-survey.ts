@@ -1,4 +1,5 @@
 import { browser } from "#imports"
+import { env } from "@/env"
 import { EXTENSION_VERSION } from "@/utils/constants/app"
 import { i18n } from "@/utils/i18n"
 
@@ -52,6 +53,9 @@ function getUILang(): string {
 }
 
 export async function setupUninstallSurvey() {
+  // The survey reports the extension and browser versions to a hosted form.
+  if (env.WXT_LOCAL_ONLY) return
+
   const surveyUrl = i18n.t("uninstallSurveyUrl")
   const browserType = import.meta.env.BROWSER
 
