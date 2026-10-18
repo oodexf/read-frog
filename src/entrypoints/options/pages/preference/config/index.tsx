@@ -16,6 +16,11 @@ export function ConfigManagementSection() {
         title={i18n.t("options.preference.config.backup.title")}
         description={i18n.t("options.preference.config.backup.description", [MAX_BACKUPS_COUNT])}
       />
+      <ConfigNavItem
+        to="/preference/webdav-backup"
+        title={i18n.t("options.preference.config.webdav.title")}
+        description={i18n.t("options.preference.config.webdav.navDescription")}
+      />
       <ResetConfigItem />
     </ConfigSection>
   )

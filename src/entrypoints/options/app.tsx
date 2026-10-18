@@ -102,6 +102,11 @@ const ConfigBackupPage = lazy(() =>
     default: module.ConfigBackupPage,
   })),
 )
+const WebdavBackupPage = lazy(() =>
+  import("./pages/preference/config/webdav-backup").then((module) => ({
+    default: module.WebdavBackupPage,
+  })),
+)
 const ExtensionActivationPage = lazy(() =>
   import("./pages/preference/extension-activation/activation-page").then((module) => ({
     default: module.ExtensionActivationPage,
@@ -148,6 +153,7 @@ const ROUTE_COMPONENTS: Record<RoutePath, ComponentType> = {
   "/advanced/glossary": GlossaryPage,
   "/advanced/glossary/:glossaryId": GlossaryEditorPage,
   "/preference/config-backup": ConfigBackupPage,
+  "/preference/webdav-backup": WebdavBackupPage,
   "/preference/extension-activation": ExtensionActivationPage,
   "/page-translation/custom-css": CustomCssPage,
   "/page-translation/prompts": PersonalizedPromptsPage,

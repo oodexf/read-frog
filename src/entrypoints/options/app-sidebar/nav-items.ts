@@ -24,6 +24,7 @@ export const ROUTE_DEFS = [
   { path: "/advanced/glossary" },
   { path: "/advanced/glossary/:glossaryId" },
   { path: "/preference/config-backup" },
+  { path: "/preference/webdav-backup" },
   { path: "/preference/extension-activation" },
   { path: "/page-translation/custom-css" },
   { path: "/page-translation/prompts" },

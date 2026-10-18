@@ -98,6 +98,13 @@ const ALL_SEARCH_ITEMS: SearchItem[] = [
     pageKey: "options.preference.title",
   },
   {
+    sectionId: "webdav-backup",
+    route: "/preference/webdav-backup",
+    titleKey: "options.preference.config.webdav.title",
+    descriptionKey: "options.preference.config.webdav.navDescription",
+    pageKey: "options.preference.title",
+  },
+  {
     sectionId: "reset-config",
     route: "/preference",
     titleKey: "options.preference.config.reset.title",

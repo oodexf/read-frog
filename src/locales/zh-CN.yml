@@ -498,6 +498,41 @@ options:
           description: 您确定要删除此备份吗？此操作无法撤销。
           cancel: 取消
           confirm: 删除
+      webdav:
+        title: WebDAV 备份
+        navDescription: 将设置和术语表备份到你自己的 WebDAV 服务器，并可从中恢复
+        description: 备份以 JSON 文件写入下方文件夹，格式与手动导出相同。WebDAV 密码只保存在本设备上，不会包含在导出文件或 Google Drive 同步中。
+        url: 文件夹地址
+        urlHint: 文件夹不存在时会自动创建。坚果云示例：https://dav.jianguoyun.com/dav/read-frog/
+        username: 用户名
+        password: 密码
+        includeApiKeys: 包含 API 密钥
+        includeApiKeysDescription: 默认关闭。恢复不含 API 密钥的备份时，同一服务商会保留你当前的密钥。
+        maxBackups: 保留的备份数
+        maxBackupsDescription: 每次新建备份后，会删除文件夹中更早的备份。
+        test: 测试连接
+        testSuccess: 已连接到 WebDAV 文件夹
+        testError: 无法连接到 WebDAV 文件夹
+        save: 保存
+        saveSuccess: WebDAV 设置已保存
+        invalidUrl: 无法保存 WebDAV 设置
+        remoteBackups: 服务器上的备份
+        refresh: 刷新
+        backupNow: 立即备份
+        backupSuccess: 已备份到 WebDAV
+        backupError: WebDAV 备份失败
+        pruneFailed: 旧备份未能删除。
+        listError: 无法获取备份列表。
+        empty: 还没有备份
+        emptyDescription: 点击“立即备份”上传第一份备份。
+        restoreTitle: 恢复这份备份？
+        restoreDescription: 当前的设置和术语表将被替换。当前设置会先保存到本地备份列表。
+        restoreSuccess: 已从 WebDAV 恢复
+        restoreError: 无法恢复这份备份
+        glossaryError: 设置已恢复，但术语表未能恢复。
+        deleteTitle: 从服务器删除这份备份？
+        deleteDescription: 文件将从你的 WebDAV 文件夹中删除，且无法撤销。
+        deleteError: 无法删除这份备份
       reset:
         title: 恢复默认配置
         description: 将所有配置重置为默认，术语库不受影响
