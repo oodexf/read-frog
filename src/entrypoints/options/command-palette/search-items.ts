@@ -593,7 +593,6 @@ const ALL_SEARCH_ITEMS: SearchItem[] = [
 const LOCAL_ONLY_HIDDEN_SECTION_IDS = new Set<string>([
   "analytics",
   "subtitles-ai-quota",
-  "selection-toolbar-note-suggestion",
   CUSTOM_ACTION_NOTEBASE_SECTION_ID,
 ])
 

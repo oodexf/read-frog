@@ -22,6 +22,7 @@ import type {
 import type { GlossarySnapshot } from "@/utils/glossary/active-matcher"
 import type { MatchedTerm } from "@/utils/glossary/types"
 import type { HostedAiStatus } from "@/utils/hosted-ai/types"
+import type { LocalNoteSaveInput } from "@/utils/local-notes/types"
 import type { PromptableProviderRef, SerializableProviderRef } from "@/utils/providers/provider-ref"
 import type { EdgeTTSVoice } from "@/utils/server/edge-tts/types"
 import { defineExtensionMessaging } from "@webext-core/messaging"
@@ -51,6 +52,10 @@ interface ProtocolMap {
     url: string | undefined
     targetLang: LangCodeISO6393
   }) => Promise<GlossarySnapshot>
+  // local notes (WXT_LOCAL_ONLY) — like the glossary, they live in the
+  // extension's IndexedDB, which a content script cannot open.
+  saveLocalNotes: (data: LocalNoteSaveInput) => Promise<number>
+  countDueLocalNotes: () => Promise<number>
   // translation state
   getEnablePageTranslationByTabId: (data: { tabId: number }) => boolean | undefined
   getEnablePageTranslationFromContentScript: () => Promise<boolean>

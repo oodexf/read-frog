@@ -1923,3 +1923,37 @@ languages:
   wls: 瓦利斯语
   rar: 拉罗汤加语
   hif: 斐济印地语
+localNotes:
+  cancel: 取消
+  noteSuggestionSettingDescription: 用 AI 服务商划词翻译后，推荐值得保存到笔记的词
+  title: 笔记
+  pageDescription: 从划词工具栏保存的结果及其复习进度。只保存在这个浏览器里。
+  save: 保存笔记
+  saving: 保存中...
+  saved: 已保存到笔记
+  saveFailed: 保存笔记失败
+  nothingToSave: 这个结果没有可保存的内容
+  suggestionDescription: 选择要保存到笔记的词，随时复习。
+  empty: 还没有笔记。保存自定义 AI 动作的结果或笔记建议后，会出现在这里。
+  allActions: 全部动作
+  count: "$1 条笔记"
+  review: 复习
+  reviewWithCount: "复习（$1）"
+  exportCsv: 导出 CSV
+  exportJson: 导出 JSON
+  delete: 删除
+  deleteAll: 全部删除
+  deleteAllConfirm: 删除所有笔记及其复习记录？此操作无法撤销。
+  dueNow: 现在复习
+  dueOn: "$1 复习"
+  openSource: 打开来源页面
+  reviewDescription: 先回想答案，再评价记得怎么样。评价决定这张卡片下次什么时候出现。
+  showAnswer: 显示答案
+  gradeAgain: 忘记
+  gradeHard: 困难
+  gradeGood: 记得
+  gradeEasy: 简单
+  remaining: "剩余 $1 张"
+  reviewDone: 全部复习完了
+  reviewDoneDescription: 现在没有需要复习的卡片，晚点再来。
+  backToNotes: 返回笔记

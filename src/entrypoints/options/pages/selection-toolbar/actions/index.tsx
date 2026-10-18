@@ -1,6 +1,5 @@
 import { useAtom } from "jotai"
 import { Switch } from "@/components/ui/base-ui/switch"
-import { env } from "@/env"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
 import { i18n } from "@/utils/i18n"
 import { ConfigItem } from "../../../components/config-item"
@@ -58,8 +57,7 @@ export function ActionsSection() {
           onCheckedChange={(checked) => setFeatureEnabled("speak", checked)}
         />
       </ConfigItem>
-      {/* Suggestions only offer to save to a Notebase. */}
-      {!env.WXT_LOCAL_ONLY && <NoteSuggestionItems />}
+      <NoteSuggestionItems />
     </ConfigSection>
   )
 }

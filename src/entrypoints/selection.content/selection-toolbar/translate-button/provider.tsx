@@ -66,6 +66,7 @@ import {
   selectionSessionAtom,
   selectionToolbarTranslateRequestAtom,
 } from "../atoms"
+import { LocalReviewDueTab } from "../local-review-due-tab"
 import { NoteSuggestionCard } from "../note-suggestion/note-suggestion-card"
 import { useNoteSuggestion } from "../note-suggestion/use-note-suggestion"
 import { ReviewDueTab } from "../review-due-tab"
@@ -908,7 +909,11 @@ export function SelectionTranslationProvider({ children }: { children: ReactNode
               )}
             <SelectionToolbarErrorAlert error={error} className="-mt-3" />
           </SelectionPopover.Body>
-          {!env.WXT_LOCAL_ONLY && <ReviewDueTab source="extension_selection_translation" />}
+          {env.WXT_LOCAL_ONLY ? (
+            <LocalReviewDueTab />
+          ) : (
+            <ReviewDueTab source="extension_selection_translation" />
+          )}
           <TranslateFooterContent
             paragraphsText={paragraphsText}
             providers={translateProviders}

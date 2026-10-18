@@ -5,6 +5,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { createContext, use, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { CustomActionContent } from "@/components/custom-action/custom-action-content"
 import { CustomActionToolButton } from "@/components/custom-action/custom-action-tool-button"
+import { SaveToLocalNotesButton } from "@/components/custom-action/save-to-local-notes-button"
 import { SaveToNotebaseButton } from "@/components/custom-action/save-to-notebase-button"
 import { isSaveToNotebaseDialogOpenAtom } from "@/components/custom-action/save-to-notebase-dialog-atom"
 import { SaveToNotebaseDialogHost } from "@/components/custom-action/save-to-notebase-dialog-host"
@@ -44,6 +45,7 @@ import {
   selectionAtom,
   selectionSessionAtom,
 } from "../atoms"
+import { LocalReviewDueTab } from "../local-review-due-tab"
 import { ReviewDueTab } from "../review-due-tab"
 import { useSelectionOpenRequestResolver } from "../use-selection-open-request"
 import { useSelectionShortcuts } from "../use-selection-shortcuts"
@@ -461,7 +463,11 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
             />
             <SelectionToolbarErrorAlert error={displayedError} />
           </SelectionPopover.Body>
-          {!env.WXT_LOCAL_ONLY && <ReviewDueTab source="extension_custom_ai_action" />}
+          {env.WXT_LOCAL_ONLY ? (
+            <LocalReviewDueTab />
+          ) : (
+            <ReviewDueTab source="extension_custom_ai_action" />
+          )}
           <CustomActionFooterContent
             paragraphsText={paragraphsText}
             providers={baseCustomActionProviders}
@@ -472,7 +478,13 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
           >
             {activeAction && (
               <>
-                {!env.WXT_LOCAL_ONLY && (
+                {env.WXT_LOCAL_ONLY ? (
+                  <SaveToLocalNotesButton
+                    action={activeAction}
+                    isRunning={displayedIsRunning}
+                    result={displayedResult}
+                  />
+                ) : (
                   <SaveToNotebaseButton
                     action={activeAction}
                     isRunning={displayedIsRunning}

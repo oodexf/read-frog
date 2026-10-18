@@ -30,6 +30,7 @@ import { setupGlossaryMessageHandlers } from "./glossary"
 import { setupHostedAiStatusHandler } from "./hosted-ai-status"
 import { setupIframeInjection } from "./iframe-injection"
 import { setupLLMGenerateTextMessageHandlers } from "./llm-generate-text"
+import { setupLocalNotesMessageHandlers } from "./local-notes"
 import { initMockData } from "./mock-data"
 import { newUserGuide } from "./new-user-guide"
 import { setupNotebasePendingSaveProcessor } from "./notebase-pending-save"
@@ -155,7 +156,11 @@ export default defineBackground({
     proxyFetch()
     setupHostedAiStatusHandler()
     setupGlossaryMessageHandlers()
-    if (!env.WXT_LOCAL_ONLY) setupNotebasePendingSaveProcessor(() => backgroundReady)
+    if (env.WXT_LOCAL_ONLY) {
+      setupLocalNotesMessageHandlers()
+    } else {
+      setupNotebasePendingSaveProcessor(() => backgroundReady)
+    }
     setupEdgeTTSMessageHandlers()
     setupLLMGenerateTextMessageHandlers()
     setupTTSPlaybackMessageHandlers()

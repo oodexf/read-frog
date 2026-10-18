@@ -5,7 +5,6 @@ import type { ValidatedNoteSuggestion } from "@/utils/note-suggestion/types"
 import { useAtomValue } from "jotai"
 import { useCallback, useRef, useState } from "react"
 import { isAbortError } from "@/components/ui/selection-popover/inline-error"
-import { env } from "@/env"
 import { classifyResolvedProvider } from "@/utils/analytics-provider"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
 import { streamBackgroundNoteSuggestion } from "@/utils/content-script/background-stream-client"
@@ -106,9 +105,7 @@ export function useNoteSuggestion() {
 
   const maybeFire = useCallback((input: NoteSuggestionFireInput) => {
     const config = latestRef.current
-    // A suggestion only offers to save to a Notebase, which a local-only build
-    // has none of, so it would spend the user's tokens on a dead end.
-    if (env.WXT_LOCAL_ONLY || !config.noteSuggestion.enabled) {
+    if (!config.noteSuggestion.enabled) {
       return
     }
     if (completedSessionKeysRef.current.has(input.sessionKey)) {
