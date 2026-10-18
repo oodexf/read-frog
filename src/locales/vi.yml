@@ -165,14 +165,10 @@ options:
         videoSubtitles: Phụ đề video
         inputTranslation: Dịch đầu vào
         languageDetection: Phát hiện ngôn ngữ
-    sponsorCta: Nhận AI nhanh, tiết kiệm chi phí
-    sponsorCtaJalapenoCloud: Nhận ưu đãi giảm 50% GLM 5.2
     setApiKeyWarning:
       message: Hãy đặt API Key ở trang $1
     badges:
       featureCount: $1 tính năng
-      sponsor: Tài trợ
-      sponsorJalapenoCloud: Miễn phí $$2
     dialog:
       title: Thêm nhà cung cấp mới
       groups:

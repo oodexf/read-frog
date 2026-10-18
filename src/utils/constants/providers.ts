@@ -6,7 +6,6 @@ import type {
   LLMProviderTypes,
   ProviderConfig,
   ProvidersConfig,
-  ProviderSponsorConfig,
 } from "@/types/config/provider"
 import type { Theme } from "@/types/config/theme"
 import { APP_NAME } from "@read-frog/definitions"
@@ -188,7 +187,6 @@ export const PROVIDER_ITEMS: Record<
     logo: (theme: Theme) => string
     name: string
     website: string
-    sponsor?: ProviderSponsorConfig
     /**
      * Where someone signs up for or copies this provider's key. Only providers that set it get
      * the "Get API key" button next to the API key field — absent means no button, because most
@@ -220,15 +218,7 @@ export const PROVIDER_ITEMS: Record<
   jalapenocloud: {
     logo: () => jalapenoCloudLogo,
     name: "Jalapeno Cloud",
-    website: "https://www.jalapeno-cloud.ai/readfrog",
-    apiKeyUrl: "https://www.jalapeno-cloud.ai/readfrog",
-    sponsor: {
-      sponsoring: true,
-      referUrl: "https://www.jalapeno-cloud.ai/readfrog",
-      // Both default to the generic sponsor wording; Jalapeno names its actual offer instead.
-      badgeI18nKey: "options.apiProviders.badges.sponsorJalapenoCloud",
-      ctaI18nKey: "options.apiProviders.sponsorCtaJalapenoCloud",
-    },
+    website: "https://www.jalapeno-cloud.ai",
   },
   atlascloud: {
     logo: getLobeIconsCDNUrlFn("atlascloud"),
@@ -701,9 +691,14 @@ export const DEFAULT_PROVIDER_CONFIG_LIST: ProvidersConfig = [
   DEFAULT_PROVIDER_CONFIG["google-translate"],
   DEFAULT_PROVIDER_CONFIG["microsoft-translate"],
   DEFAULT_PROVIDER_CONFIG.openai,
-  DEFAULT_PROVIDER_CONFIG.jalapenocloud,
   DEFAULT_PROVIDER_CONFIG.deepseek,
 ]
+
+/**
+ * Provider types this fork no longer offers in the "Add provider" dialog. The type stays in the
+ * schema so a provider someone already set up keeps working and stays editable.
+ */
+export const HIDDEN_ADD_PROVIDER_TYPES: readonly APIProviderTypes[] = ["jalapenocloud"]
 
 /** Resolve a provider's default description in the active interface language. */
 export function getDefaultProviderDescription(providerType: APIProviderTypes): string | undefined {

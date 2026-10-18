@@ -13,6 +13,7 @@ import {
 import { logger } from "../logger"
 import { replaceBuiltInAiProviders } from "./local-only"
 import { runMigration } from "./migration"
+import { removeUnusedJalapenoCloudProviders } from "./remove-jalapeno-cloud"
 
 export interface InitializeConfigResult {
   /**
@@ -62,7 +63,7 @@ export async function initializeConfig(): Promise<InitializeConfigResult> {
     }
   }
 
-  const localConfig = replaceBuiltInAiProviders(config)
+  const localConfig = removeUnusedJalapenoCloudProviders(replaceBuiltInAiProviders(config))
   didConfigChange = didConfigChange || localConfig !== config
   config = localConfig
 

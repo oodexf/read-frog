@@ -165,14 +165,10 @@ options:
         videoSubtitles: Video altyazıları
         inputTranslation: Giriş çevirisi
         languageDetection: Dil algılama
-    sponsorCta: Hızlı ve uygun maliyetli yapay zekâ al
-    sponsorCtaJalapenoCloud: GLM 5.2ʼde %50 indirim al
     setApiKeyWarning:
       message: API anahtarınızı $1 sayfasında ayarlayın
     badges:
       featureCount: $1 özellik
-      sponsor: Sponsor
-      sponsorJalapenoCloud: $$2 ücretsiz
     dialog:
       title: Yeni sağlayıcı ekle
       groups:
