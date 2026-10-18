@@ -1,0 +1,84 @@
+# Fork-only release: builds the WXT_LOCAL_ONLY extension and publishes it as a
+# GitHub Release tagged v<upstream version>-local.<n>. It never runs changesets,
+# so syncing upstream main never conflicts with a fork version bump.
+name: Release Local-Only Extension
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release Local-Only Extension
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: 0
+      SKIP_FREE_API: true
+      WXT_LOCAL_ONLY: "true"
+      # The Google Drive client ID is the only required production value a
+      # local-only build still uses; a fork usually has none of its own.
+      WXT_SKIP_ENV_VALIDATION: "true"
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm and Node.js
+        uses: pnpm/setup@v3
+        with:
+          cache: true
+          install: false
+
+      - name: Resolve Release Tag
+        id: tag
+        run: |
+          BASE_VERSION=$(jq -r '.version' package.json)
+          LAST=$(git ls-remote --tags origin "refs/tags/v${BASE_VERSION}-local.*" \
+            | sed -E 's|.*refs/tags/v[^-]+-local\.([0-9]+)$|\1|' \
+            | { grep -E '^[0-9]+$' || true; } | sort -n | tail -1)
+          VERSION="${BASE_VERSION}-local.$(( ${LAST:-0} + 1 ))"
+          echo "base=$BASE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Releasing v$VERSION"
+
+      - name: Use Google Client ID If Configured
+        env:
+          GOOGLE_CLIENT_ID: ${{ vars.WXT_GOOGLE_CLIENT_ID }}
+        run: |
+          if [ -n "$GOOGLE_CLIENT_ID" ]; then
+            echo "WXT_GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> "$GITHUB_ENV"
+          fi
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Tests
+        run: pnpm test --exclude="**/free-api.test.ts"
+
+      # Not committed: only the build sees the -local version, which becomes the
+      # manifest version_name while the numeric version stays the upstream one.
+      - name: Set Build Version
+        run: |
+          jq --arg version "${{ steps.tag.outputs.version }}" '.version = $version' package.json > package.json.tmp
+          mv package.json.tmp package.json
+
+      - name: Build and Zip Extension
+        run: pnpm zip:all
+
+      - name: Create GitHub Release
+        run: |
+          gh release create "$TAG" \
+            .output/*-chrome.zip .output/*-edge.zip .output/*-firefox.zip .output/*-sources.zip \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
+            --notes "Local-only build (\`WXT_LOCAL_ONLY=true\`) of upstream $BASE_VERSION at $GITHUB_SHA. It never contacts Read Frog's own services."
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+          BASE_VERSION: ${{ steps.tag.outputs.base }}
