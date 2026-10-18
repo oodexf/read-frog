@@ -121,7 +121,8 @@ export default defineBackground({
       await cleanupAllAiSegmentationCache()
     })
 
-    newUserGuide()
+    // The guide lives on the official site, which a local-only build leaves out.
+    if (!env.WXT_LOCAL_ONLY) newUserGuide()
     setupFeatureUsedEventHandlers()
     translationMessage()
     registerActionIconListeners()
@@ -154,7 +155,7 @@ export default defineBackground({
     proxyFetch()
     setupHostedAiStatusHandler()
     setupGlossaryMessageHandlers()
-    setupNotebasePendingSaveProcessor(() => backgroundReady)
+    if (!env.WXT_LOCAL_ONLY) setupNotebasePendingSaveProcessor(() => backgroundReady)
     setupEdgeTTSMessageHandlers()
     setupLLMGenerateTextMessageHandlers()
     setupTTSPlaybackMessageHandlers()

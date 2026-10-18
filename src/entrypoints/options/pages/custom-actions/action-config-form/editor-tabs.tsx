@@ -4,6 +4,7 @@ import { useSelector } from "@tanstack/react-store"
 import { useAtom } from "jotai"
 import { useMemo, useRef } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/base-ui/tabs"
+import { env } from "@/env"
 import { i18n } from "@/utils/i18n"
 import { CUSTOM_ACTION_NOTEBASE_SECTION_ID } from "@/utils/navigation"
 import { sanitizeCustomActionNotebaseConnection } from "@/utils/notebase/connection"
@@ -76,6 +77,11 @@ export function ActionEditorTabs({
 }) {
   const [tab, setTab] = useAtom(customActionEditorTabAtom)
   const tabBarRef = useRef<HTMLDivElement>(null)
+
+  // Notebase lives on Read Frog's service, so a local-only build has only the config panel.
+  if (env.WXT_LOCAL_ONLY) {
+    return config
+  }
 
   const handleValueChange = (value: CustomActionEditorTab) => {
     setTab(value)

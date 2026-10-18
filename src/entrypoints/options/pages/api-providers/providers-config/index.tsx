@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/base-ui/button"
 import { Dialog, DialogTrigger } from "@/components/ui/base-ui/dialog"
 import { anchoredToastManager } from "@/components/ui/base-ui/toast"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/base-ui/tooltip"
+import { env } from "@/env"
 import { isAPIProvider, isAPIProviderConfig } from "@/types/config/provider"
 import { configAtom, configFieldsAtomMap } from "@/utils/atoms/config"
 import { patchProviderConfigAtom } from "@/utils/atoms/entity-config"
@@ -79,10 +80,8 @@ function useRequestedProvider() {
 
     const providerId = getRequestedProviderId(search)
     if (providerId) {
-      if (
-        !isBuiltInAiProviderId(providerId) &&
-        !getProviderConfigById(providersConfig, providerId)
-      ) {
+      const isOfferedBuiltIn = !env.WXT_LOCAL_ONLY && isBuiltInAiProviderId(providerId)
+      if (!isOfferedBuiltIn && !getProviderConfigById(providersConfig, providerId)) {
         return
       }
 
@@ -127,11 +126,12 @@ function useRequestedProvider() {
 export function ProvidersConfig() {
   const selectedProviderId = useAtomValue(selectedProviderIdAtom)
   useRequestedProvider()
-  const editor = isBuiltInAiProviderId(selectedProviderId) ? (
-    <BuiltInProviderPanel key={selectedProviderId} providerId={selectedProviderId} />
-  ) : (
-    <ProviderConfigForm key={selectedProviderId} />
-  )
+  const editor =
+    !env.WXT_LOCAL_ONLY && isBuiltInAiProviderId(selectedProviderId) ? (
+      <BuiltInProviderPanel key={selectedProviderId} providerId={selectedProviderId} />
+    ) : (
+      <ProviderConfigForm key={selectedProviderId} />
+    )
 
   return (
     <ConfigItem
@@ -214,7 +214,7 @@ function ProviderCardList() {
           renderItem={(providerConfig) => <ProviderCard providerConfig={providerConfig} />}
         />
       </EntityListRail>
-      <BuiltInProviderSection />
+      {!env.WXT_LOCAL_ONLY && <BuiltInProviderSection />}
     </div>
   )
 }

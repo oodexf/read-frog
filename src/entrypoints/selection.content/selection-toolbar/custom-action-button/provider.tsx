@@ -20,6 +20,7 @@ import { createSelectionToolbarPrecheckError } from "@/components/ui/selection-p
 import { SelectionToolbarErrorAlert } from "@/components/ui/selection-popover/selection-toolbar-error-alert"
 import { SelectionToolbarFooterContent } from "@/components/ui/selection-popover/selection-toolbar-footer-content"
 import { SelectionToolbarTitleContent } from "@/components/ui/selection-popover/selection-toolbar-title-content"
+import { env } from "@/env"
 import { ANALYTICS_FEATURE, ANALYTICS_SURFACE } from "@/types/analytics"
 import { createFeatureUsageContext, trackFeatureUsed } from "@/utils/analytics"
 import { classifyResolvedProvider, UNKNOWN_FEATURE_PROVIDER } from "@/utils/analytics-provider"
@@ -460,7 +461,7 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
             />
             <SelectionToolbarErrorAlert error={displayedError} />
           </SelectionPopover.Body>
-          <ReviewDueTab source="extension_custom_ai_action" />
+          {!env.WXT_LOCAL_ONLY && <ReviewDueTab source="extension_custom_ai_action" />}
           <CustomActionFooterContent
             paragraphsText={paragraphsText}
             providers={baseCustomActionProviders}
@@ -471,18 +472,20 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
           >
             {activeAction && (
               <>
-                <SaveToNotebaseButton
-                  action={activeAction}
-                  isRunning={displayedIsRunning}
-                  result={displayedResult}
-                />
+                {!env.WXT_LOCAL_ONLY && (
+                  <SaveToNotebaseButton
+                    action={activeAction}
+                    isRunning={displayedIsRunning}
+                    result={displayedResult}
+                  />
+                )}
                 <CustomActionToolButton action={activeAction} />
               </>
             )}
           </CustomActionFooterContent>
         </SelectionPopover.Content>
       </SelectionPopover.Root>
-      <SaveToNotebaseDialogHost />
+      {!env.WXT_LOCAL_ONLY && <SaveToNotebaseDialogHost />}
     </SelectionCustomActionContext>
   )
 }

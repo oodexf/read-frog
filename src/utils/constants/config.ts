@@ -6,12 +6,12 @@ import type {
 } from "@/types/config/selection-toolbar"
 import type { PageTranslateRange } from "@/types/config/translate"
 import { DEFAULT_LAYOUT } from "@read-frog/layout-engine/presets"
+import { DEFAULT_BUILT_IN_ACTION_PROVIDER_ID } from "@/utils/constants/provider-ids"
 import {
   buildDictionaryActionLayout,
   buildImproveWritingActionLayout,
   buildSentenceAnalysisActionLayout,
 } from "@/utils/layout-host/slots"
-import { BUILT_IN_AI_PROVIDER_ID } from "@/utils/providers/provider-registry"
 import {
   BUILT_IN_ACTION_DEFAULT_SHORTCUTS,
   BUILT_IN_ACTION_IDS,
@@ -106,7 +106,7 @@ const getBuiltInImproveWritingLayout = memoizeBuiltInLayout(buildImproveWritingA
  * (never persisted), so it always follows the current locale's field names.
  */
 export function createDefaultDictionaryAction(): SelectionToolbarCustomAction {
-  const action = createDictionaryDefinition(BUILT_IN_AI_PROVIDER_ID)
+  const action = createDictionaryDefinition(DEFAULT_BUILT_IN_ACTION_PROVIDER_ID)
   const outputSchema = action.outputSchema.map((field) => ({
     ...field,
     id: field.id.startsWith("dictionary-")
@@ -130,7 +130,7 @@ export function createDefaultDictionaryAction(): SelectionToolbarCustomAction {
  * enabled/provider/Notebase state persisted.
  */
 export function createDefaultSentenceAnalysisAction(): SelectionToolbarCustomAction {
-  const action = createSentenceAnalysisDefinition(BUILT_IN_AI_PROVIDER_ID)
+  const action = createSentenceAnalysisDefinition(DEFAULT_BUILT_IN_ACTION_PROVIDER_ID)
   const outputSchema = action.outputSchema.map((field) => ({
     ...field,
     id: `default-${field.id}`,
@@ -150,7 +150,7 @@ export function createDefaultSentenceAnalysisAction(): SelectionToolbarCustomAct
  * config without its state reads it as off, as the schema does.
  */
 export function createDefaultImproveWritingAction(): SelectionToolbarCustomAction {
-  const action = createImproveWritingDefinition(BUILT_IN_AI_PROVIDER_ID)
+  const action = createImproveWritingDefinition(DEFAULT_BUILT_IN_ACTION_PROVIDER_ID)
   const outputSchema = action.outputSchema.map((field) => ({
     ...field,
     id: `default-${field.id}`,
@@ -243,17 +243,17 @@ export const DEFAULT_CONFIG: Config = {
     builtInActions: {
       dictionary: {
         enabled: true,
-        providerId: BUILT_IN_AI_PROVIDER_ID,
+        providerId: DEFAULT_BUILT_IN_ACTION_PROVIDER_ID,
         shortcut: BUILT_IN_ACTION_DEFAULT_SHORTCUTS[BUILT_IN_DICTIONARY_ACTION_ID],
       },
       sentenceAnalysis: {
         enabled: true,
-        providerId: BUILT_IN_AI_PROVIDER_ID,
+        providerId: DEFAULT_BUILT_IN_ACTION_PROVIDER_ID,
         shortcut: BUILT_IN_ACTION_DEFAULT_SHORTCUTS[BUILT_IN_SENTENCE_ANALYSIS_ACTION_ID],
       },
       improveWriting: {
         enabled: true,
-        providerId: BUILT_IN_AI_PROVIDER_ID,
+        providerId: DEFAULT_BUILT_IN_ACTION_PROVIDER_ID,
         shortcut: BUILT_IN_ACTION_DEFAULT_SHORTCUTS[BUILT_IN_IMPROVE_WRITING_ACTION_ID],
       },
     },
@@ -357,15 +357,15 @@ export function buildFreshDefaultConfig(): Config {
       builtInActions: {
         dictionary: {
           enabled: true,
-          providerId: BUILT_IN_AI_PROVIDER_ID,
+          providerId: DEFAULT_BUILT_IN_ACTION_PROVIDER_ID,
         },
         sentenceAnalysis: {
           enabled: true,
-          providerId: BUILT_IN_AI_PROVIDER_ID,
+          providerId: DEFAULT_BUILT_IN_ACTION_PROVIDER_ID,
         },
         improveWriting: {
           enabled: true,
-          providerId: BUILT_IN_AI_PROVIDER_ID,
+          providerId: DEFAULT_BUILT_IN_ACTION_PROVIDER_ID,
         },
       },
       customActions: [],
