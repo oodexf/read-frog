@@ -132,6 +132,62 @@ describe("replaceBuiltInAiProviders", () => {
     expect(replaceBuiltInAiProviders(config).languageDetection).toEqual({ mode: "basic" })
   })
 
+  it("turns a provider back on rather than reset the config when none is enabled", () => {
+    const config = configOnBuiltInAi()
+    config.providersConfig = config.providersConfig.map((provider) => ({
+      ...provider,
+      enabled: false,
+    }))
+    config.selectionToolbar.customActions = [
+      { ...createDefaultDictionaryAction(), id: "custom-1", providerId: BUILT_IN_AI_PROVIDER_ID },
+    ]
+
+    const result = replaceBuiltInAiProviders(config)
+
+    expect(result.selectionToolbar.builtInActions.dictionary.providerId).toBe(OPENAI_ID)
+    expect(result.pageTranslation.providerId).toBe(MICROSOFT_TRANSLATE_PROVIDER_ID)
+    expect(result.providersConfig.find((p) => p.id === OPENAI_ID)?.enabled).toBe(true)
+    expect(
+      result.providersConfig.find((p) => p.id === MICROSOFT_TRANSLATE_PROVIDER_ID)?.enabled,
+    ).toBe(true)
+    // Decided on the providers the user had on, so it does not ride along.
+    expect(result.languageDetection).toEqual({ mode: "basic" })
+    const parsed = configSchema.safeParse(result)
+    expect(parsed.success).toBe(true)
+    expect(parsed.data?.selectionToolbar.customActions[0]?.id).toBe("custom-1")
+  })
+
+  it("adds the default provider when the config has none that fits", () => {
+    const config = configOnBuiltInAi()
+    config.providersConfig = config.providersConfig.filter(
+      (provider) =>
+        getProviderIdsForCapability("customAction", [provider]).length === 0 &&
+        getProviderIdsForCapability("pageTranslation", [provider]).length === 0,
+    )
+
+    const result = replaceBuiltInAiProviders(config)
+
+    expect(result.selectionToolbar.builtInActions.dictionary.providerId).toBe(OPENAI_ID)
+    expect(result.providersConfig.filter((p) => p.id === OPENAI_ID)).toHaveLength(1)
+    expect(configSchema.safeParse(result).success).toBe(true)
+  })
+
+  it("skips built-in action states the schema would default", () => {
+    const config = configOnBuiltInAi()
+    const builtInActions = config.selectionToolbar.builtInActions as Partial<
+      Config["selectionToolbar"]["builtInActions"]
+    >
+    delete builtInActions.sentenceAnalysis
+    delete builtInActions.improveWriting
+
+    const result = replaceBuiltInAiProviders(config)
+
+    expect(result).not.toBe(config)
+    expect(result.selectionToolbar.builtInActions.dictionary.providerId).toBe(OPENAI_ID)
+    expect(result.pageTranslation.providerId).toBe(MICROSOFT_TRANSLATE_PROVIDER_ID)
+    expect(configSchema.safeParse(result).success).toBe(true)
+  })
+
   it("returns the same object when nothing points at the built-in AI", () => {
     const config = structuredClone(DEFAULT_CONFIG)
     expect(replaceBuiltInAiProviders(config)).toBe(config)

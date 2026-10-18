@@ -1924,6 +1924,8 @@ languages:
   rar: 拉罗汤加语
   hif: 斐济印地语
 localNotes:
+  nextCardIn: "$1 后出现下一张"
+  waitingDescription: 正在学习的卡片会在短暂间隔后再次出现。可以保持页面打开，或稍后再来。
   cancel: 取消
   noteSuggestionSettingDescription: 用 AI 服务商划词翻译后，推荐值得保存到笔记的词
   title: 笔记

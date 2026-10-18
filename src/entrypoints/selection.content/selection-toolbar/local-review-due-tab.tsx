@@ -20,6 +20,9 @@ export function LocalReviewDueTab() {
     queryFn: async (): Promise<number> => await sendMessage("countDueLocalNotes", undefined),
     retry: false,
     staleTime: 60_000,
+    // A learning card comes due within minutes of being graded, so the count
+    // is re-read while the popover stays open rather than only when it mounts.
+    refetchInterval: 60_000,
     meta: { suppressToast: true },
   })
 

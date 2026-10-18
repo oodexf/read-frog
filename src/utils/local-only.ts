@@ -75,10 +75,10 @@ export function createLocalOnlyFetch(
 }
 
 /**
- * Refuses every `fetch` to Read Frog's services in the current context. The
- * background is the one context that needs it: content scripts and extension
- * pages reach the API only through the background's proxy fetch, and the
- * background's own oRPC, auth and analytics clients all fetch from there.
+ * Refuses every `fetch` to Read Frog's services in the current context.
+ * Installed in the background (its oRPC, auth and analytics clients, and the
+ * proxy every content script goes through) and in every extension page, which
+ * also fetch on their own — a provider's model list, for one.
  */
 export function installLocalOnlyFetchGuard() {
   if (!env.WXT_LOCAL_ONLY) return

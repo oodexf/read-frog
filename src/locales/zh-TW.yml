@@ -1924,6 +1924,8 @@ languages:
   rar: 庫克群島毛利語
   hif: 斐濟印地語
 localNotes:
+  nextCardIn: "$1 後出現下一張"
+  waitingDescription: 正在學習的卡片會在短暫間隔後再次出現。可以保持頁面開啟，或稍後再來。
   cancel: 取消
   noteSuggestionSettingDescription: 用 AI 服務商劃詞翻譯後，推薦值得儲存到筆記的詞
   title: 筆記

@@ -1,3 +1,4 @@
+import type { ReviewSession } from "@/utils/local-notes/review-session"
 import type { LocalNoteRecord, LocalNoteReviewGrade } from "@/utils/local-notes/types"
 import { Icon } from "@iconify/react"
 import { useEffect, useRef, useState } from "react"
@@ -6,17 +7,20 @@ import { Button, buttonVariants } from "@/components/ui/base-ui/button"
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/base-ui/empty"
 import { i18n } from "@/utils/i18n"
 import { listDueLocalNotes } from "@/utils/local-notes/repository"
-import { previewReviewIntervals, REVIEW_GRADES } from "@/utils/local-notes/scheduler"
+import {
+  completeReview,
+  promoteDueCards,
+  startReviewSession,
+} from "@/utils/local-notes/review-session"
+import {
+  formatReviewInterval,
+  previewReviewIntervals,
+  REVIEW_GRADES,
+} from "@/utils/local-notes/scheduler"
 import { cn } from "@/utils/styles/utils"
 import { PageLayout } from "../../components/page-layout"
 import { formatLocalNoteValue, LocalNoteBackFields } from "./note-fields"
 import { useReviewLocalNote } from "./use-local-notes"
-
-/**
- * A card that comes back within this long (a learning step) is shown again in
- * this session, after the rest of the queue, the way Anki keeps it in play.
- */
-const REQUEUE_WITHIN_MS = 20 * 60_000
 
 const GRADE_LABELS: Record<LocalNoteReviewGrade, () => string> = {
   again: () => i18n.t("localNotes.gradeAgain"),
@@ -46,7 +50,9 @@ function BackToNotesLink() {
  * is the question, the rest the answer. Space reveals, 1–4 grade.
  */
 export function LocalNotesReviewPage() {
-  const [queue, setQueue] = useState<LocalNoteRecord[] | null>(null)
+  const [session, setSession] = useState<ReviewSession | null>(null)
+  // Ticks while a learning card waits, to bring it back once due and show the countdown.
+  const [now, setNow] = useState(() => new Date())
   const [revealed, setRevealed] = useState(false)
   const { mutateAsync: review, isPending } = useReviewLocalNote()
 
@@ -54,7 +60,7 @@ export function LocalNotesReviewPage() {
     let cancelled = false
     void listDueLocalNotes().then((notes) => {
       if (!cancelled) {
-        setQueue(notes)
+        setSession(startReviewSession(notes))
       }
     })
     return () => {
@@ -62,21 +68,29 @@ export function LocalNotesReviewPage() {
     }
   }, [])
 
-  const current = queue?.[0]
+  const hasWaiting = (session?.waiting.length ?? 0) > 0
+  useEffect(() => {
+    const timer = hasWaiting
+      ? window.setInterval(() => {
+          const tick = new Date()
+          setNow(tick)
+          setSession((previous) => previous && promoteDueCards(previous, tick))
+        }, 1_000)
+      : undefined
+    return () => window.clearInterval(timer)
+  }, [hasWaiting])
+
+  const current = session?.ready[0]
 
   const grade = async (value: LocalNoteReviewGrade) => {
     if (!current || isPending) {
       return
     }
     const next = await review({ id: current.id, grade: value })
+    const gradedAt = new Date()
     setRevealed(false)
-    setQueue((previous) => {
-      const rest = (previous ?? []).slice(1)
-      if (next && next.due.getTime() - Date.now() <= REQUEUE_WITHIN_MS) {
-        return [...rest, next]
-      }
-      return rest
-    })
+    setNow(gradedAt)
+    setSession((previous) => previous && completeReview(previous, next, gradedAt))
   }
 
   // The latest handlers for the key listener, which is registered once.
@@ -107,9 +121,11 @@ export function LocalNotesReviewPage() {
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [])
 
-  if (queue === null) {
+  if (session === null) {
     return null
   }
+  const remaining = session.ready.length + session.waiting.length
+  const nextWaiting = session.waiting[0]
 
   return (
     <PageLayout
@@ -119,14 +135,25 @@ export function LocalNotesReviewPage() {
     >
       <div className="flex items-center justify-between gap-2">
         <BackToNotesLink />
-        {current && (
+        {remaining > 0 && (
           <span className="text-sm text-muted-foreground">
-            {i18n.t("localNotes.remaining", [queue.length])}
+            {i18n.t("localNotes.remaining", [remaining])}
           </span>
         )}
       </div>
 
-      {!current ? (
+      {!current && nextWaiting ? (
+        <Empty className="border">
+          <EmptyHeader>
+            <EmptyTitle>
+              {i18n.t("localNotes.nextCardIn", [
+                formatReviewInterval(Math.max(0, nextWaiting.due.getTime() - now.getTime())),
+              ])}
+            </EmptyTitle>
+            <EmptyDescription>{i18n.t("localNotes.waitingDescription")}</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : !current ? (
         <Empty className="border">
           <EmptyHeader>
             <EmptyTitle>{i18n.t("localNotes.reviewDone")}</EmptyTitle>

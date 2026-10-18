@@ -16,8 +16,10 @@ const WXT_API_KEY_PATTERN = /^WXT_.*API_KEY/
 const ALLOWED_BUNDLED_API_KEYS = new Set(["WXT_POSTHOG_API_KEY"])
 const useLocalPackages = isLocalPackagesEnabled(process.env)
 const shouldSkipEnvValidation = process.env.WXT_SKIP_ENV_VALIDATION === "true"
-const localOnly = isLocalOnlyEnabled(process.env)
-assertLocalOnlyEnv(process.env)
+// WXT loads this file BEFORE the .env files, so WXT_LOCAL_ONLY (and the
+// analytics keys it refuses) may not be in process.env yet at module scope.
+// Read it only from the manifest, hooks and plugins, which run after.
+const isLocalOnlyBuild = () => isLocalOnlyEnabled(process.env)
 // Content scripts that exist only to talk to the official website.
 const OFFICIAL_SITE_ENTRYPOINTS = new Set(["guide"])
 // Root of the read-frog monorepo whose source is aliased in when developing
@@ -61,7 +63,7 @@ export default defineConfig({
       "tabs",
       "alarms",
       // Only watched to notice sign-ins on the official site.
-      ...(localOnly ? [] : ["cookies"]),
+      ...(isLocalOnlyBuild() ? [] : ["cookies"]),
       "contextMenus",
       "identity",
       "scripting",
@@ -103,8 +105,12 @@ export default defineConfig({
     excludeSources: ["docs/**/*", "assets/**/*", "repos/**/*", "readmes/**/*"],
   },
   hooks: {
+    // The first hook after WXT has loaded the .env files.
+    "config:resolved": () => {
+      assertLocalOnlyEnv(process.env)
+    },
     "entrypoints:resolved": (_wxt, entrypoints) => {
-      if (!localOnly) return
+      if (!isLocalOnlyBuild()) return
       // WXT builds from this same array, so it is filtered in place.
       const kept = entrypoints.filter((entry) => !OFFICIAL_SITE_ENTRYPOINTS.has(entry.name))
       entrypoints.splice(0, entrypoints.length, ...kept)
@@ -180,7 +186,7 @@ export default defineConfig({
                   createExtensionClientEnvSchema(
                     configEnv.mode === "production",
                     shouldSkipEnvValidation,
-                    localOnly,
+                    isLocalOnlyBuild(),
                   ),
                 ).parse(resolveExtensionEnv(process.env))
 

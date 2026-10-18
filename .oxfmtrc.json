@@ -47,7 +47,7 @@
       },
       {
         "groupName": "local-only-guard",
-        "elementNamePattern": ["./local-only-guard"]
+        "elementNamePattern": ["./local-only-guard", "@/utils/local-only-guard"]
       }
     ],
     "newlinesBetween": false,

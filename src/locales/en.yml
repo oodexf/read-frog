@@ -2061,6 +2061,8 @@ languages:
   rar: Rarotongan
   hif: Fiji Hindi
 localNotes:
+  nextCardIn: "Next card in $1"
+  waitingDescription: Cards you are still learning come back after a short wait. Keep this page open, or come back later.
   cancel: Cancel
   noteSuggestionSettingDescription: After selection translation with an AI provider, suggest words to save to your notes
   title: Notes
