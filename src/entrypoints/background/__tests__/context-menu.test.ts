@@ -14,7 +14,7 @@ import {
 // vi.mock factories run during the static imports above, before this module's
 // own top-level code, so the mocks they return must be hoisted with them.
 const { sendMessageMock, ensureInitializedConfigMock } = vi.hoisted(() => ({
-  sendMessageMock: vi.fn<(...args: any[]) => any>(),
+  sendMessageMock: vi.fn<(...args: any[]) => any>(async () => undefined),
   ensureInitializedConfigMock: vi.fn<(...args: any[]) => any>(),
 }))
 const storageSetItemMock = vi.fn<(...args: any[]) => any>()
