@@ -334,7 +334,7 @@ options:
     unsupported: 无法匹配这个地址。不支持端口，也不支持 http 和 https 以外的协议。
   preference:
     title: 偏好设置
-    pageDescription: 设置陪读蛙的外观与生效范围，以及配置的同步与备份方式。
+    pageDescription: 设置陪读蛙的外观与生效范围，以及配置的备份方式。
     appearanceAndLanguage:
       title: 外观与语言
       theme:
@@ -1990,3 +1990,11 @@ localNotes:
   reviewDone: 全部复习完了
   reviewDoneDescription: 现在没有需要复习的卡片，晚点再来。
   backToNotes: 返回笔记
+# Sync page (fork-only): Google Drive, WebDAV and manual import/export
+syncSettings:
+  title: 同步
+  pageDescription: 在设备间同步配置和术语库，备份到你自己的服务器，或手动导入导出。
+  cloud:
+    title: 云端同步
+  manual:
+    title: 导入与导出

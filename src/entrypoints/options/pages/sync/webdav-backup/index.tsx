@@ -51,7 +51,7 @@ import {
   setWebdavBackupSettings,
 } from "@/utils/webdav/backup"
 import { ensureFolder, normalizeFolderUrl } from "@/utils/webdav/client"
-import { useGlossaryInvalidation } from "../../../advanced/glossary/use-glossary"
+import { useGlossaryInvalidation } from "../../advanced/glossary/use-glossary"
 
 const SETTINGS_QUERY_KEY = ["webdav-backup-settings"] as const
 const LIST_QUERY_KEY = ["webdav-backups"] as const
@@ -68,11 +68,11 @@ export function WebdavBackupPage() {
 
   return (
     <PageLayout
-      title={i18n.t("options.preference.title")}
-      description={i18n.t("options.preference.pageDescription")}
+      title={i18n.t("syncSettings.title")}
+      description={i18n.t("syncSettings.pageDescription")}
     >
       <ConfigDetailSection
-        backTo="/preference"
+        backTo="/sync"
         title={<span id="webdav-backup">{i18n.t("options.preference.config.webdav.title")}</span>}
       >
         {settings ? (

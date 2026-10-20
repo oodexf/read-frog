@@ -76,32 +76,11 @@ const ALL_SEARCH_ITEMS: SearchItem[] = [
     pageKey: "options.preference.title",
   },
   {
-    sectionId: "google-drive-sync",
-    route: "/preference",
-    titleKey: "options.preference.config.googleDrive.title",
-    descriptionKey: "options.preference.config.googleDrive.description",
-    pageKey: "options.preference.title",
-  },
-  {
-    sectionId: "manual-config-sync",
-    route: "/preference",
-    titleKey: "options.preference.config.manualSync.title",
-    descriptionKey: "options.preference.config.manualSync.description",
-    pageKey: "options.preference.title",
-  },
-  {
     // Its own page, drilled into from the Preference page's Config section.
     sectionId: "config-backup",
     route: "/preference/config-backup",
     titleKey: "options.preference.config.backup.title",
     descriptionKey: "options.preference.config.backup.description",
-    pageKey: "options.preference.title",
-  },
-  {
-    sectionId: "webdav-backup",
-    route: "/preference/webdav-backup",
-    titleKey: "options.preference.config.webdav.title",
-    descriptionKey: "options.preference.config.webdav.navDescription",
     pageKey: "options.preference.title",
   },
   {
@@ -124,6 +103,30 @@ const ALL_SEARCH_ITEMS: SearchItem[] = [
     titleKey: "options.preference.userExperience.analytics.title",
     descriptionKey: "options.preference.userExperience.analytics.description",
     pageKey: "options.preference.title",
+  },
+
+  // Sync page
+  {
+    sectionId: "google-drive-sync",
+    route: "/sync",
+    titleKey: "options.preference.config.googleDrive.title",
+    descriptionKey: "options.preference.config.googleDrive.description",
+    pageKey: "syncSettings.title",
+  },
+  {
+    // Its own page, drilled into from the Sync page's cloud section.
+    sectionId: "webdav-backup",
+    route: "/sync/webdav-backup",
+    titleKey: "options.preference.config.webdav.title",
+    descriptionKey: "options.preference.config.webdav.navDescription",
+    pageKey: "syncSettings.title",
+  },
+  {
+    sectionId: "manual-config-sync",
+    route: "/sync",
+    titleKey: "options.preference.config.manualSync.title",
+    descriptionKey: "options.preference.config.manualSync.description",
+    pageKey: "syncSettings.title",
   },
 
   // Shortcuts page

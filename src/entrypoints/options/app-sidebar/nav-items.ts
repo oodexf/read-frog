@@ -1,6 +1,8 @@
 export const ROUTE_DEFS = [
   { path: "/" },
   { path: "/preference" },
+  // Google Drive, WebDAV and manual import/export (fork-only page)
+  { path: "/sync" },
   { path: "/shortcuts" },
   { path: "/api-providers" },
   { path: "/custom-actions" },
@@ -24,7 +26,9 @@ export const ROUTE_DEFS = [
   { path: "/advanced/glossary" },
   { path: "/advanced/glossary/:glossaryId" },
   { path: "/preference/config-backup" },
+  // WebDAV backup lived under Preference before /sync; kept so old links still land.
   { path: "/preference/webdav-backup" },
+  { path: "/sync/webdav-backup" },
   { path: "/preference/extension-activation" },
   { path: "/page-translation/custom-css" },
   { path: "/page-translation/prompts" },
