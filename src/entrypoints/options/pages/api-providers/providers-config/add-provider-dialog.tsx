@@ -1,6 +1,5 @@
 import type { APIProviderTypes } from "@/types/config/provider"
 import { useSetAtom, useStore } from "jotai"
-import { SponsorBadge } from "@/components/badges/sponsor-badge"
 import { requestEditorNavigationAtom } from "@/components/form/autosave-navigation"
 import ProviderIcon from "@/components/provider-icon"
 import { useTheme } from "@/components/providers/theme-provider"
@@ -8,6 +7,7 @@ import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/base-u
 import { configFieldsAtomMap } from "@/utils/atoms/config"
 import {
   API_PROVIDER_ITEMS,
+  HIDDEN_ADD_PROVIDER_TYPES,
   PROVIDER_GROUPS,
   getProviderItemName,
 } from "@/utils/constants/providers"
@@ -47,7 +47,9 @@ export default function AddProviderDialog({ onClose }: { onClose: () => void }) 
           groupDescription={i18n.t(
             `options.apiProviders.dialog.groups.${groupKey as keyof typeof PROVIDER_GROUPS}.description`,
           )}
-          providerTypes={group.types}
+          providerTypes={group.types.filter(
+            (providerType) => !HIDDEN_ADD_PROVIDER_TYPES.includes(providerType),
+          )}
           handleAddProvider={handleAddProvider}
         />
       ))}
@@ -95,7 +97,6 @@ function ProviderButton({
   handleAddProvider: (providerType: APIProviderTypes) => void
 }) {
   const { theme } = useTheme()
-  const sponsor = API_PROVIDER_ITEMS[providerType].sponsor
   return (
     <button
       type="button"
@@ -103,12 +104,6 @@ function ProviderButton({
       className="relative flex h-auto flex-col items-center space-y-1.5 rounded-lg p-2 hover:bg-muted/70"
       onClick={() => handleAddProvider(providerType)}
     >
-      {sponsor?.sponsoring && (
-        <SponsorBadge
-          labelI18nKey={sponsor.badgeI18nKey}
-          className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[65%]"
-        />
-      )}
       <ProviderIcon logo={API_PROVIDER_ITEMS[providerType].logo(theme)} size="md" />
       <span className="line-clamp-2 flex w-full flex-1 items-center justify-center text-xs font-light">
         {getProviderItemName(providerType)}

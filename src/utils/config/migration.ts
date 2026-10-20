@@ -6,6 +6,7 @@ import { CONFIG_SCHEMA_VERSION } from "../constants/config"
 import { logger } from "../logger"
 import { ConfigVersionTooNewError } from "./errors"
 import { replaceBuiltInAiProviders } from "./local-only"
+import { removeUnusedJalapenoCloudProviders } from "./remove-jalapeno-cloud"
 
 export const LATEST_SCHEMA_VERSION = CONFIG_SCHEMA_VERSION
 
@@ -123,7 +124,9 @@ export async function migrateConfig(
     }
   }
 
-  const parseResult = configSchema.safeParse(replaceBuiltInAiProviders(originalConfig as Config))
+  const parseResult = configSchema.safeParse(
+    removeUnusedJalapenoCloudProviders(replaceBuiltInAiProviders(originalConfig as Config)),
+  )
   if (!parseResult.success) {
     throw new Error(
       `${i18n.t("options.configMigration.validationError")}: ${parseResult.error.message}`,

@@ -165,14 +165,10 @@ options:
         videoSubtitles: Subtítulos de video
         inputTranslation: Traducción de entrada
         languageDetection: Detección de idioma
-    sponsorCta: Obtén IA rápida y rentable
-    sponsorCtaJalapenoCloud: Obtén un 50 % de descuento en GLM 5.2
     setApiKeyWarning:
       message: Configura tu clave de API en la página $1
     badges:
       featureCount: $1 funciones
-      sponsor: Patrocinador
-      sponsorJalapenoCloud: $$2 gratis
     dialog:
       title: Añadir nuevo proveedor
       groups:

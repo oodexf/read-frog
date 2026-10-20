@@ -165,14 +165,10 @@ options:
         videoSubtitles: 影片字幕
         inputTranslation: 輸入翻譯
         languageDetection: 語言偵測
-    sponsorCta: 取得高速高性價比 AI
-    sponsorCtaJalapenoCloud: 取得 GLM 5.2 五折優惠
     setApiKeyWarning:
       message: 請在 $1 頁面設定 API 金鑰
     badges:
       featureCount: $1 個功能
-      sponsor: 贊助
-      sponsorJalapenoCloud: $$2 免費額度
     dialog:
       title: 新增提供者
       groups:
@@ -502,6 +498,41 @@ options:
           description: 確定要刪除此備份嗎？此操作無法復原。
           cancel: 取消
           confirm: 刪除
+      webdav:
+        title: WebDAV 備份
+        navDescription: 將設定和術語表備份到你自己的 WebDAV 伺服器，並可從中還原
+        description: 備份以 JSON 檔案寫入下方資料夾，格式與手動匯出相同。WebDAV 密碼只儲存在本裝置上，不會包含在匯出檔案或 Google Drive 同步中。
+        url: 資料夾網址
+        urlHint: 資料夾不存在時會自動建立。堅果雲範例：https://dav.jianguoyun.com/dav/read-frog/
+        username: 使用者名稱
+        password: 密碼
+        includeApiKeys: 包含 API 金鑰
+        includeApiKeysDescription: 預設關閉。還原不含 API 金鑰的備份時，同一服務商會保留你目前的金鑰。
+        maxBackups: 保留的備份數
+        maxBackupsDescription: 每次建立新備份後，會刪除資料夾中較早的備份。
+        test: 測試連線
+        testSuccess: 已連線到 WebDAV 資料夾
+        testError: 無法連線到 WebDAV 資料夾
+        save: 儲存
+        saveSuccess: WebDAV 設定已儲存
+        invalidUrl: 無法儲存 WebDAV 設定
+        remoteBackups: 伺服器上的備份
+        refresh: 重新整理
+        backupNow: 立即備份
+        backupSuccess: 已備份到 WebDAV
+        backupError: WebDAV 備份失敗
+        pruneFailed: 舊備份未能刪除。
+        listError: 無法取得備份清單。
+        empty: 還沒有備份
+        emptyDescription: 點擊「立即備份」上傳第一份備份。
+        restoreTitle: 還原這份備份？
+        restoreDescription: 目前的設定和術語表將被取代。目前設定會先儲存到本機備份清單。
+        restoreSuccess: 已從 WebDAV 還原
+        restoreError: 無法還原這份備份
+        glossaryError: 設定已還原，但術語表未能還原。
+        deleteTitle: 從伺服器刪除這份備份？
+        deleteDescription: 檔案將從你的 WebDAV 資料夾中刪除，且無法復原。
+        deleteError: 無法刪除這份備份
       reset:
         title: 重設設定
         description: 將所有設定重設為預設，詞彙庫不受影響

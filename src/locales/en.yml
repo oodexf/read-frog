@@ -165,14 +165,10 @@ options:
         videoSubtitles: Video subtitles
         inputTranslation: Input translation
         languageDetection: Language detection
-    sponsorCta: Get fast, cost-effective AI
-    sponsorCtaJalapenoCloud: Get 50% Off GLM 5.2
     setApiKeyWarning:
       message: Please set your API key on the $1 page
     badges:
       featureCount: $1 features
-      sponsor: Sponsor
-      sponsorJalapenoCloud: $$2 Free
     dialog:
       title: Add new provider
       groups:
@@ -502,6 +498,41 @@ options:
           description: Are you sure you want to delete this backup? This action cannot be undone.
           cancel: Cancel
           confirm: Delete
+      webdav:
+        title: WebDAV backup
+        navDescription: Back up your settings and glossaries to your own WebDAV server, and restore them from it
+        description: Backups are written as JSON files to the folder below, in the same format as the manual export. Your WebDAV password is stored on this device only and is never included in exports or Google Drive sync.
+        url: Folder URL
+        urlHint: "The folder is created if it does not exist. Example for Jianguoyun: https://dav.jianguoyun.com/dav/read-frog/"
+        username: Username
+        password: Password
+        includeApiKeys: Include API keys
+        includeApiKeysDescription: Off by default. When a backup has no API keys, restoring it keeps the keys you have now for the same providers.
+        maxBackups: Backups to keep
+        maxBackupsDescription: Older backups in the folder are deleted after each new one.
+        test: Test connection
+        testSuccess: Connected to the WebDAV folder
+        testError: Could not connect to the WebDAV folder
+        save: Save
+        saveSuccess: WebDAV settings saved
+        invalidUrl: Could not save the WebDAV settings
+        remoteBackups: Backups on the server
+        refresh: Refresh
+        backupNow: Back up now
+        backupSuccess: Backed up to WebDAV
+        backupError: WebDAV backup failed
+        pruneFailed: Old backups could not be deleted.
+        listError: Could not list backups.
+        empty: No backups yet
+        emptyDescription: Click "Back up now" to upload your first backup.
+        restoreTitle: Restore this backup?
+        restoreDescription: Your current settings and glossaries will be replaced. The current settings are saved to the local backup list first.
+        restoreSuccess: Restored from WebDAV
+        restoreError: Could not restore this backup
+        glossaryError: The settings were restored, but the glossaries could not be.
+        deleteTitle: Delete this backup from the server?
+        deleteDescription: The file is removed from your WebDAV folder. This cannot be undone.
+        deleteError: Could not delete this backup
       reset:
         title: Reset config
         description: Reset all config to default value. Your glossaries are not affected.
