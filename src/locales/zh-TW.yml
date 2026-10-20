@@ -334,7 +334,7 @@ options:
     unsupported: 無法比對這個位址。不支援連接埠，也不支援 http 與 https 以外的協定。
   preference:
     title: 偏好設定
-    pageDescription: 設定陪讀蛙的外觀與生效範圍，以及設定檔的同步與備份方式。
+    pageDescription: 設定陪讀蛙的外觀與生效範圍，以及設定檔的備份方式。
     appearanceAndLanguage:
       title: 外觀與語言
       theme:
@@ -1441,7 +1441,7 @@ options:
         description: 影片載入完成後自動開始翻譯字幕，不用再點按鈕。
       aiSegmentation:
         title: AI 智慧斷句
-        description: 讓 AI 把字幕重新切成讀起來完整的句子。時間軸也由 AI 判斷，可能出現錯位。需要設定 LLM 翻譯服務。
+        description: 讓 AI 把字幕重新切成完整句子，會增加翻譯回應時間。需要較強的 LLM，弱模型可能漏句或錯位。
     aiQuota:
       title: AI 字幕額度
       description: AI 利用語音轉文字技術取得任何影片的準確字幕
@@ -1990,3 +1990,11 @@ localNotes:
   reviewDone: 全部複習完了
   reviewDoneDescription: 現在沒有需要複習的卡片，晚點再來。
   backToNotes: 返回筆記
+# Sync page (fork-only): Google Drive, WebDAV and manual import/export
+syncSettings:
+  title: 同步
+  pageDescription: 在裝置間同步設定和術語庫，備份到你自己的伺服器，或手動匯入匯出。
+  cloud:
+    title: 雲端同步
+  manual:
+    title: 匯入與匯出

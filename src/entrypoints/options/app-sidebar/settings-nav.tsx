@@ -42,6 +42,17 @@ export function SettingsNav() {
 
           <SidebarMenuItem>
             <SidebarMenuButton
+              render={<Link to="/sync" />}
+              isActive={pathname.startsWith("/sync")}
+              tooltip={i18n.t("syncSettings.title")}
+            >
+              <Icon icon="tabler:cloud" />
+              <span>{i18n.t("syncSettings.title")}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          <SidebarMenuItem>
+            <SidebarMenuButton
               render={<Link to="/shortcuts" />}
               isActive={pathname === "/shortcuts"}
               tooltip={i18n.t("options.shortcuts.title")}

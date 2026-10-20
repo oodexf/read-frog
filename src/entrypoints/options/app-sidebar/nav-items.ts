@@ -1,6 +1,8 @@
 export const ROUTE_DEFS = [
   { path: "/" },
   { path: "/preference" },
+  // Google Drive, WebDAV and manual import/export (fork-only page)
+  { path: "/sync" },
   { path: "/shortcuts" },
   { path: "/api-providers" },
   { path: "/custom-actions" },
@@ -24,7 +26,9 @@ export const ROUTE_DEFS = [
   { path: "/advanced/glossary" },
   { path: "/advanced/glossary/:glossaryId" },
   { path: "/preference/config-backup" },
+  // WebDAV backup lived under Preference before /sync; kept so old links still land.
   { path: "/preference/webdav-backup" },
+  { path: "/sync/webdav-backup" },
   { path: "/preference/extension-activation" },
   { path: "/page-translation/custom-css" },
   { path: "/page-translation/prompts" },
@@ -33,6 +37,7 @@ export const ROUTE_DEFS = [
   { path: "/page-translation/translation-control/never-auto-translate-websites" },
   { path: "/page-translation/translation-control/site-rules" },
   { path: "/page-translation/translation-queue" },
+  { path: "/video-subtitles/auto-start" },
   { path: "/video-subtitles/style" },
   { path: "/video-subtitles/style/custom-css" },
   { path: "/video-subtitles/prompts" },

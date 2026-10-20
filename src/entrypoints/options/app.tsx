@@ -51,6 +51,11 @@ const GlossaryEditorPage = lazy(() =>
 function AdvancedRedirect() {
   return <Navigate to="/advanced/glossary" replace />
 }
+
+/** WebDAV backup moved from Preference to the Sync page. */
+function LegacyWebdavBackupRedirect() {
+  return <Navigate to="/sync/webdav-backup" replace />
+}
 const LocalNotesPage = lazy(() =>
   import("./pages/local-notes").then((module) => ({ default: module.LocalNotesPage })),
 )
@@ -102,8 +107,9 @@ const ConfigBackupPage = lazy(() =>
     default: module.ConfigBackupPage,
   })),
 )
+const SyncPage = lazy(() => import("./pages/sync").then((module) => ({ default: module.SyncPage })))
 const WebdavBackupPage = lazy(() =>
-  import("./pages/preference/config/webdav-backup").then((module) => ({
+  import("./pages/sync/webdav-backup").then((module) => ({
     default: module.WebdavBackupPage,
   })),
 )
@@ -115,6 +121,11 @@ const ExtensionActivationPage = lazy(() =>
 const SubtitlesCustomCssPage = lazy(() =>
   import("./pages/video-subtitles/subtitles-style/custom-css").then((module) => ({
     default: module.SubtitlesCustomCssPage,
+  })),
+)
+const SubtitlesAutoStartPage = lazy(() =>
+  import("./pages/video-subtitles/preference/auto-start-page").then((module) => ({
+    default: module.SubtitlesAutoStartPage,
   })),
 )
 const SubtitlesStylePage = lazy(() =>
@@ -136,6 +147,7 @@ const SubtitlesQueuePage = lazy(() =>
 const ROUTE_COMPONENTS: Record<RoutePath, ComponentType> = {
   "/": ApiProvidersPage,
   "/preference": PreferencePage,
+  "/sync": SyncPage,
   "/shortcuts": ShortcutsPage,
   "/api-providers": ApiProvidersPage,
   "/custom-actions": CustomActionsPage,
@@ -153,7 +165,8 @@ const ROUTE_COMPONENTS: Record<RoutePath, ComponentType> = {
   "/advanced/glossary": GlossaryPage,
   "/advanced/glossary/:glossaryId": GlossaryEditorPage,
   "/preference/config-backup": ConfigBackupPage,
-  "/preference/webdav-backup": WebdavBackupPage,
+  "/preference/webdav-backup": LegacyWebdavBackupRedirect,
+  "/sync/webdav-backup": WebdavBackupPage,
   "/preference/extension-activation": ExtensionActivationPage,
   "/page-translation/custom-css": CustomCssPage,
   "/page-translation/prompts": PersonalizedPromptsPage,
@@ -163,6 +176,7 @@ const ROUTE_COMPONENTS: Record<RoutePath, ComponentType> = {
     NeverAutoTranslateWebsitesPage,
   "/page-translation/translation-control/site-rules": SiteRulesPage,
   "/page-translation/translation-queue": TranslationQueuePage,
+  "/video-subtitles/auto-start": SubtitlesAutoStartPage,
   "/video-subtitles/style": SubtitlesStylePage,
   "/video-subtitles/style/custom-css": SubtitlesCustomCssPage,
   "/video-subtitles/prompts": SubtitlesCustomPromptsPage,
