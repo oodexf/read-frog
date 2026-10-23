@@ -1754,6 +1754,14 @@ translationHub:
     time: Vaxt
     original: Orijinal
     translation: Tərcümə
+    stopped: "Dayandırıldı: $1. Artıq tərcümə olunmuş sətirlər saxlanılır; sonra davam edə bilərsiniz."
+    failureReason: "Son xəta: $1"
+    encoding: Kodlaşdırma
+    encodingWarning: Bu fayl UTF-8 deyil, ona görə də $1 kimi oxundu. Önizləmədəki orijinal mətn pozuq görünürsə, başqa kodlaşdırma seçin.
+    encodings:
+      westernEuropean: Qərbi Avropa
+      centralEuropean: Mərkəzi Avropa
+      cyrillic: Kiril
     errors:
       unsupported: Read Frog bu altyazı faylını oxuya bilmir. SRT, VTT və ya ASS/SSA istifadə edin.
       noLines: Bu faylda dialoq tapılmadı

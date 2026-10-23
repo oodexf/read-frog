@@ -1756,6 +1756,14 @@ translationHub:
     time: Zaman
     original: Orijinal
     translation: Çeviri
+    stopped: "Durduruldu: $1. Çevrilmiş satırlar korunur; daha sonra devam edebilirsiniz."
+    failureReason: "Son hata: $1"
+    encoding: Kodlama
+    encodingWarning: Bu dosya UTF-8 değil, bu yüzden $1 olarak okundu. Önizlemedeki orijinal metin bozuk görünüyorsa başka bir kodlama seçin.
+    encodings:
+      westernEuropean: Batı Avrupa
+      centralEuropean: Orta Avrupa
+      cyrillic: Kiril
     errors:
       unsupported: Bu, Read Frog'un okuyabildiği bir altyazı dosyası değil. SRT, VTT veya ASS/SSA kullanın.
       noLines: Bu dosyada diyalog bulunamadı

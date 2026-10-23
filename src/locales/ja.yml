@@ -1756,6 +1756,14 @@ translationHub:
     time: 時間
     original: 原文
     translation: 訳文
+    stopped: 中断しました：$1。翻訳済みの行は残るので、あとで続きを翻訳できます。
+    failureReason: 直近のエラー：$1
+    encoding: 文字コード
+    encodingWarning: このファイルは UTF-8 ではないため、$1 として読み込みました。プレビューの原文が文字化けしている場合は、別の文字コードを選んでください。
+    encodings:
+      westernEuropean: 西欧言語
+      centralEuropean: 中欧言語
+      cyrillic: キリル文字
     errors:
       unsupported: Read Frog が読める字幕ファイルではありません。SRT、VTT、ASS/SSA を使ってください。
       noLines: このファイルにセリフが見つかりません

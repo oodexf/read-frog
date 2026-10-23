@@ -1756,6 +1756,14 @@ translationHub:
     time: Время
     original: Оригинал
     translation: Перевод
+    stopped: "Остановлено: $1. Уже переведённые строки сохранены, можно продолжить позже."
+    failureReason: "Последняя ошибка: $1"
+    encoding: Кодировка
+    encodingWarning: Файл не в UTF-8, поэтому он прочитан как $1. Если исходный текст в предпросмотре выглядит как набор символов, выберите другую кодировку.
+    encodings:
+      westernEuropean: Западноевропейская
+      centralEuropean: Центральноевропейская
+      cyrillic: Кириллица
     errors:
       unsupported: Read Frog не может прочитать этот файл субтитров. Используйте SRT, VTT или ASS/SSA.
       noLines: В файле не найдено реплик

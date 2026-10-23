@@ -4,6 +4,7 @@ import {
   buildTranslatedSubtitleFileName,
   decodeSubtitleBuffer,
   detectSubtitleFormat,
+  guessLegacyEncoding,
   parseSubtitleFile,
 } from ".."
 
@@ -172,6 +173,47 @@ describe("ass", () => {
   })
 })
 
+describe("ass drawing mode", () => {
+  const event = (text: string) => `Dialogue: 0,0:00:01.00,0:00:02.00,Default,,0,0,0,,${text}`
+  const file = (text: string) =>
+    [
+      "[Events]",
+      "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text",
+      event(text),
+    ].join("\n")
+  const lastLine = (output: string) => output.split("\n").at(-1)
+
+  it("keeps dialogue that follows a shape once \\p0 switches drawing off", () => {
+    const parsed = parse("show.ass", file("{\\p1}m 0 0 l 10 10{\\p0}Hello there"))
+
+    expect(parsed.units.map((unit) => unit.text)).toEqual(["Hello there"])
+    expect(lastLine(parsed.serialize(["你好"], TRANSLATION_ONLY))).toBe(
+      event("{\\p1}m 0 0 l 10 10{\\p0}你好"),
+    )
+    expect(lastLine(parsed.serialize(["你好"], BILINGUAL))).toBe(
+      event("{\\p1}m 0 0 l 10 10{\\p0}Hello there\\N你好"),
+    )
+    expect(lastLine(parsed.serialize(["你好"], BILINGUAL_TRANSLATION_FIRST))).toBe(
+      event("{\\p1}m 0 0 l 10 10{\\p0}你好\\NHello there"),
+    )
+  })
+
+  it("switches drawing off before a translation that follows a trailing shape", () => {
+    const parsed = parse("show.ass", file("Hi{\\p1}m 0 0 l 5 5"))
+
+    expect(parsed.units.map((unit) => unit.text)).toEqual(["Hi"])
+    expect(lastLine(parsed.serialize(["嗨"], BILINGUAL))).toBe(
+      event("Hi{\\p1}m 0 0 l 5 5{\\p0}\\N{\\r}嗨"),
+    )
+  })
+
+  it("does not mistake \\pos or \\pbo for drawing mode", () => {
+    const parsed = parse("show.ass", file("{\\pos(10,20)\\pbo5}Over here"))
+
+    expect(parsed.units.map((unit) => unit.text)).toEqual(["Over here"])
+  })
+})
+
 describe("detectSubtitleFormat", () => {
   it("goes by extension, then by content", () => {
     expect(detectSubtitleFormat("a.SSA", "")).toBe("ass")
@@ -182,24 +224,73 @@ describe("detectSubtitleFormat", () => {
   })
 })
 
+// Bytes are spelled out throughout: the test environment's TextEncoder only
+// keeps the low byte of each character.
+// "Ça va très bien" in Windows-1252.
+const CP1252_FRENCH = new Uint8Array([
+  0xc7, 0x61, 0x20, 0x76, 0x61, 0x20, 0x74, 0x72, 0xe8, 0x73, 0x20, 0x62, 0x69, 0x65, 0x6e,
+])
+// "Привет, я тут" in Windows-1251.
+const CP1251_RUSSIAN = new Uint8Array([
+  0xcf, 0xf0, 0xe8, 0xe2, 0xe5, 0xf2, 0x2c, 0x20, 0xff, 0x20, 0xf2, 0xf3, 0xf2,
+])
+// "你好，世界" in GBK.
+const GBK_CHINESE = new Uint8Array([0xc4, 0xe3, 0xba, 0xc3, 0xa3, 0xac, 0xca, 0xc0, 0xbd, 0xe7])
+// "你好" in Big5.
+const BIG5_CHINESE = new Uint8Array([0xa7, 0x41, 0xa6, 0x6e])
+
 describe("decodeSubtitleBuffer", () => {
   it("reads UTF-8 and strips the BOM and carriage returns", () => {
-    // BOM, then "你好\r\nhi" in UTF-8. Spelled out: the test environment's
-    // TextEncoder only keeps the low byte of each character.
+    // BOM, then "你好\r\nhi".
     const bytes = new Uint8Array([
       0xef, 0xbb, 0xbf, 0xe4, 0xbd, 0xa0, 0xe5, 0xa5, 0xbd, 0x0d, 0x0a, 0x68, 0x69,
     ])
-    expect(decodeSubtitleBuffer(bytes)).toBe("你好\nhi")
-  })
-
-  it("falls back to GBK when the bytes are not valid UTF-8", () => {
-    // "你好" in GBK.
-    expect(decodeSubtitleBuffer(new Uint8Array([0xc4, 0xe3, 0xba, 0xc3]))).toBe("你好")
+    expect(decodeSubtitleBuffer(bytes)).toEqual({
+      text: "你好\nhi",
+      encoding: "utf-8",
+      isLegacy: false,
+    })
   })
 
   it("reads UTF-16 with a byte order mark", () => {
-    expect(decodeSubtitleBuffer(new Uint8Array([0xff, 0xfe, 0x48, 0x00, 0x69, 0x00]))).toBe("Hi")
-    expect(decodeSubtitleBuffer(new Uint8Array([0xfe, 0xff, 0x00, 0x48, 0x00, 0x69]))).toBe("Hi")
+    expect(decodeSubtitleBuffer(new Uint8Array([0xff, 0xfe, 0x48, 0x00, 0x69, 0x00]))).toEqual({
+      text: "Hi",
+      encoding: "utf-16le",
+      isLegacy: false,
+    })
+    expect(decodeSubtitleBuffer(new Uint8Array([0xfe, 0xff, 0x00, 0x48, 0x00, 0x69])).text).toBe(
+      "Hi",
+    )
+  })
+
+  it("does not read Western European text as Chinese", () => {
+    expect(decodeSubtitleBuffer(CP1252_FRENCH, { uiLocale: "zh-CN" })).toEqual({
+      text: "Ça va très bien",
+      encoding: "windows-1252",
+      isLegacy: true,
+    })
+  })
+
+  it("moves past encodings that cannot decode the bytes", () => {
+    expect(decodeSubtitleBuffer(CP1251_RUSSIAN, { uiLocale: "en" })).toEqual({
+      text: "Привет, я тут",
+      encoding: "windows-1251",
+      isLegacy: true,
+    })
+    expect(decodeSubtitleBuffer(GBK_CHINESE, { uiLocale: "en" }).text).toBe("你好，世界")
+  })
+
+  it("tries the UI language's own code page first", () => {
+    expect(guessLegacyEncoding(BIG5_CHINESE, "zh-TW")).toBe("big5")
+    expect(decodeSubtitleBuffer(BIG5_CHINESE, { uiLocale: "zh-TW" }).text).toBe("你好")
+  })
+
+  it("reads with the encoding the user picked", () => {
+    expect(decodeSubtitleBuffer(CP1251_RUSSIAN, { encoding: "windows-1251" })).toEqual({
+      text: "Привет, я тут",
+      encoding: "windows-1251",
+      isLegacy: true,
+    })
   })
 })
 
@@ -229,5 +320,24 @@ describe("buildTranslatedSubtitleFileName", () => {
         format: "vtt",
       }),
     ).toBe("captions.zh.vtt")
+  })
+
+  it("gives a file recognised by its content the extension of its format", () => {
+    expect(
+      buildTranslatedSubtitleFileName("captions.txt", {
+        sourceCode: "eng",
+        targetCode: "cmn",
+        mode: "bilingual",
+        format: "srt",
+      }),
+    ).toBe("captions.en-zh.srt")
+    expect(
+      buildTranslatedSubtitleFileName("Movie.2024.1080p", {
+        sourceCode: "eng",
+        targetCode: "cmn",
+        mode: "translationOnly",
+        format: "ass",
+      }),
+    ).toBe("Movie.2024.1080p.zh.ass")
   })
 })

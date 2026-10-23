@@ -1756,6 +1756,14 @@ translationHub:
     time: 시간
     original: 원문
     translation: 번역문
+    stopped: "중단됨: $1. 이미 번역된 줄은 유지되며 나중에 이어서 번역할 수 있습니다."
+    failureReason: "마지막 오류: $1"
+    encoding: 인코딩
+    encodingWarning: 이 파일은 UTF-8이 아니어서 $1(으)로 읽었습니다. 미리보기의 원문이 깨져 보이면 다른 인코딩을 선택하세요.
+    encodings:
+      westernEuropean: 서유럽어
+      centralEuropean: 중앙유럽어
+      cyrillic: 키릴 문자
     errors:
       unsupported: Read Frog가 읽을 수 없는 자막 파일입니다. SRT, VTT, ASS/SSA를 사용하세요.
       noLines: 이 파일에서 대사를 찾을 수 없습니다

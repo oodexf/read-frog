@@ -1761,6 +1761,14 @@ translationHub:
     time: Tiempo
     original: Original
     translation: Traducción
+    stopped: "Detenido: $1. Las líneas ya traducidas se conservan; puedes continuar más tarde."
+    failureReason: "Último error: $1"
+    encoding: Codificación
+    encodingWarning: Este archivo no está en UTF-8, así que se leyó como $1. Si el texto original de la vista previa se ve ilegible, elige otra codificación.
+    encodings:
+      westernEuropean: Europa occidental
+      centralEuropean: Europa central
+      cyrillic: Cirílico
     errors:
       unsupported: Read Frog no puede leer este archivo de subtítulos. Usa SRT, VTT o ASS/SSA.
       noLines: No se encontraron diálogos en este archivo

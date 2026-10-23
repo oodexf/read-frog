@@ -95,6 +95,52 @@ describe("translateSubtitleFile", () => {
     ])
   })
 
+  it("keeps translating past a batch that keeps failing, and retries just that batch", async () => {
+    // translateSubtitles throws when every line of a batch fails.
+    const failFirstBatch = (fragments: SubtitlesFragment[]) => {
+      if (fragments[0]!.text === "line 0") throw new Error("Translation service unavailable")
+      return fragments.map((fragment) => ({ ...fragment, translation: `译 ${fragment.text}` }))
+    }
+    mocks.translateSubtitles.mockImplementation(async (fragments: SubtitlesFragment[]) =>
+      failFirstBatch(fragments),
+    )
+
+    const first = await translateSubtitleFile({ ...BASE_REQUEST, units: units(20) })
+
+    // The batch beside the failed one in its window is kept, and later windows still run.
+    expect(first.translations.slice(5).every(Boolean)).toBe(true)
+    expect(first).toMatchObject({
+      failedCount: 5,
+      stoppedEarly: false,
+      errorMessage: "Translation service unavailable",
+    })
+
+    translateAll()
+    mocks.translateSubtitles.mockClear()
+    const second = await translateSubtitleFile({
+      ...BASE_REQUEST,
+      units: units(20),
+      previousTranslations: first.translations,
+    })
+
+    expect(second).toMatchObject({ failedCount: 0, errorMessage: null })
+    expect(mocks.translateSubtitles).toHaveBeenCalledTimes(1)
+    expect(mocks.translateSubtitles.mock.calls[0]![0]).toHaveLength(5)
+  })
+
+  it("stops after two windows in a row with nothing translated", async () => {
+    mocks.translateSubtitles.mockRejectedValue(new Error("API authentication failed"))
+
+    const result = await translateSubtitleFile({ ...BASE_REQUEST, units: units(100) })
+
+    expect(mocks.translateSubtitles).toHaveBeenCalledTimes(4)
+    expect(result).toMatchObject({
+      failedCount: 100,
+      stoppedEarly: true,
+      errorMessage: "API authentication failed",
+    })
+  })
+
   it("refuses to translate into the language the file is already in", async () => {
     await expect(
       translateSubtitleFile({ ...BASE_REQUEST, detectedSourceCode: "cmn", units: units(1) }),

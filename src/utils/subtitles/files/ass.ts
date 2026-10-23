@@ -20,22 +20,62 @@ const FORMAT_LINE_PATTERN = /^format\s*:/i
 const DIALOGUE_LINE_PATTERN = /^dialogue\s*:/i
 const OVERRIDE_BLOCK_PATTERN = /\{[^}]*\}/g
 const HAS_OVERRIDE_BLOCK_PATTERN = /\{[^}]*\}/
-const LEADING_OVERRIDE_BLOCKS_PATTERN = /^(?:\{[^}]*\})+/
-/** `\p1` and up switch a line into vector drawing mode: its "text" is path commands. */
-const DRAWING_MODE_PATTERN = /\{[^}]*\\p[1-9]/
+/** `\p1` and up switch to vector drawing, `\p0` back to text; `\pos` and `\pbo` don't match. */
+const DRAWING_TAG_PATTERN = /\\p(\d+)/g
 
 type AssLine =
   | { kind: "raw"; line: string }
   | { kind: "dialogue"; fields: string; text: string; unitIndex: number }
 
-export function cleanAssText(text: string): string {
-  if (DRAWING_MODE_PATTERN.test(text)) {
-    return ""
+interface AssSegment {
+  raw: string
+  /** An override block (`{...}`) rather than text. */
+  isTags: boolean
+  /** The drawing mode in effect: text drawn in it is path commands, not words. */
+  drawing: boolean
+}
+
+/**
+ * Splits dialogue into override blocks and the text between them, following
+ * drawing mode as it switches on and off. A line can draw a shape and then go
+ * back to words (`{\p1}m 0 0 l 10 10{\p0}Hello`), so mode is per segment, not
+ * per line.
+ */
+function tokenizeAssText(text: string): { segments: AssSegment[]; endsInDrawing: boolean } {
+  const segments: AssSegment[] = []
+  let drawing = false
+  let cursor = 0
+
+  for (const block of text.matchAll(OVERRIDE_BLOCK_PATTERN)) {
+    if (block.index > cursor) {
+      segments.push({ raw: text.slice(cursor, block.index), isTags: false, drawing })
+    }
+    for (const tag of block[0].matchAll(DRAWING_TAG_PATTERN)) {
+      drawing = Number(tag[1]) > 0
+    }
+    segments.push({ raw: block[0], isTags: true, drawing })
+    cursor = block.index + block[0].length
   }
-  return text
-    .replace(OVERRIDE_BLOCK_PATTERN, "")
-    .replace(/\\[Nn]/g, "\n")
-    .replace(/\\h/g, " ")
+  if (cursor < text.length) {
+    segments.push({ raw: text.slice(cursor), isTags: false, drawing })
+  }
+
+  return { segments, endsInDrawing: drawing }
+}
+
+function toPlainText(raw: string): string {
+  return raw.replace(/\\[Nn]/g, "\n").replace(/\\h/g, " ")
+}
+
+function isDialogueSegment(segment: AssSegment): boolean {
+  return !segment.isTags && !segment.drawing && toPlainText(segment.raw).trim() !== ""
+}
+
+export function cleanAssText(text: string): string {
+  return tokenizeAssText(text)
+    .segments.filter((segment) => !segment.isTags && !segment.drawing)
+    .map((segment) => toPlainText(segment.raw))
+    .join("")
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean)
@@ -66,20 +106,30 @@ function composeAssText(
   }
 
   const translated = translationLines.join("\\N")
-  const leading = LEADING_OVERRIDE_BLOCKS_PATTERN.exec(rawText)?.[0] ?? ""
-  const body = rawText.slice(leading.length)
+  const { segments, endsInDrawing } = tokenizeAssText(rawText)
+  // Everything before the first words: position tags and any shape drawn ahead
+  // of the dialogue, which stay first whichever line goes on top.
+  const firstDialogue = segments.findIndex(isDialogueSegment)
+  const prefix = segments
+    .slice(0, Math.max(firstDialogue, 0))
+    .map((segment) => segment.raw)
+    .join("")
+  const body = rawText.slice(prefix.length)
 
   if (options.mode === "translationOnly") {
-    return leading + translated
+    return prefix + translated
   }
   if (options.translationFirst) {
-    return `${leading}${translated}\\N${body}`
+    return `${prefix}${translated}\\N${body}`
   }
-  // Inline overrides in the original (an unclosed `{\i1}`, a colour) would run on
-  // into the translation; `\r` resets to the line's style, and leaves the
-  // line-wide position tags alone.
+  // A line that ends in drawing mode would draw the translation as path
+  // commands, so drawing is switched off first. Inline overrides in the
+  // original (an unclosed `{\i1}`, a colour) would also run on into the
+  // translation; `\r` resets to the line's style and leaves the line-wide
+  // position tags alone.
+  const endDrawing = endsInDrawing ? "{\\p0}" : ""
   const reset = HAS_OVERRIDE_BLOCK_PATTERN.test(body) ? "{\\r}" : ""
-  return `${rawText}\\N${reset}${translated}`
+  return `${rawText}${endDrawing}\\N${reset}${translated}`
 }
 
 export function parseAss(text: string): ParsedSubtitleFile {

@@ -1801,6 +1801,14 @@ translationHub:
     time: 时间
     original: 原文
     translation: 译文
+    stopped: 已中断：$1。已翻译的行会保留，稍后可以继续翻译。
+    failureReason: 最近一次错误：$1
+    encoding: 编码
+    encodingWarning: 这个文件不是 UTF-8 编码，已按 $1 读取。如果预览里的原文是乱码，请换一种编码。
+    encodings:
+      westernEuropean: 西欧语言
+      centralEuropean: 中欧语言
+      cyrillic: 西里尔文
     errors:
       unsupported: 无法识别这个字幕文件，请使用 SRT、VTT 或 ASS/SSA 格式。
       noLines: 文件里没有找到对白

@@ -1938,6 +1938,14 @@ translationHub:
     time: Time
     original: Original
     translation: Translation
+    stopped: "Stopped: $1. Lines already translated are kept; you can continue later."
+    failureReason: "Last error: $1"
+    encoding: Encoding
+    encodingWarning: This file isn't UTF-8, so it was read as $1. If the original text in the preview looks garbled, pick another encoding.
+    encodings:
+      westernEuropean: Western European
+      centralEuropean: Central European
+      cyrillic: Cyrillic
     errors:
       unsupported: This isn't a subtitle file Read Frog can read. Use SRT, VTT or ASS/SSA.
       noLines: No dialogue found in this file

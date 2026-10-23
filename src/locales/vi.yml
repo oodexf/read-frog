@@ -1756,6 +1756,14 @@ translationHub:
     time: Thời gian
     original: Bản gốc
     translation: Bản dịch
+    stopped: "Đã dừng: $1. Các dòng đã dịch vẫn được giữ, bạn có thể tiếp tục sau."
+    failureReason: "Lỗi gần nhất: $1"
+    encoding: Mã hóa
+    encodingWarning: Tệp này không phải UTF-8 nên được đọc theo $1. Nếu văn bản gốc trong bản xem trước bị lỗi ký tự, hãy chọn mã hóa khác.
+    encodings:
+      westernEuropean: Tây Âu
+      centralEuropean: Trung Âu
+      cyrillic: Chữ Kirin
     errors:
       unsupported: Read Frog không đọc được tệp phụ đề này. Hãy dùng SRT, VTT hoặc ASS/SSA.
       noLines: Không tìm thấy lời thoại trong tệp này

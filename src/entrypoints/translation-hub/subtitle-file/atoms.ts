@@ -1,9 +1,16 @@
 import type { LangCodeISO6393 } from "@read-frog/definitions"
-import type { ParsedSubtitleFile, SubtitleOutputOptions } from "@/utils/subtitles/files"
+import type {
+  LegacySubtitleEncoding,
+  ParsedSubtitleFile,
+  SubtitleEncoding,
+  SubtitleOutputOptions,
+} from "@/utils/subtitles/files"
 import { atom } from "jotai"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
 import { detectLanguage } from "@/utils/content/language"
+import { i18n } from "@/utils/i18n"
 import { sourceLangCodeAtom, targetLangCodeAtom } from "../atoms"
+import { loadSubtitleFile } from "./load-subtitle-file"
 import { translateSubtitleFile } from "./translate-subtitle-file"
 
 /** Enough dialogue for language detection without sending a whole film to an LLM detector. */
@@ -11,7 +18,11 @@ const DETECTION_SAMPLE_MAX_CHARS = 1000
 
 export interface LoadedSubtitleFile {
   name: string
+  /** Kept so a legacy file can be read again in the encoding the user picks. */
+  bytes: Uint8Array
   parsed: ParsedSubtitleFile
+  /** A legacy (non-Unicode) encoding is a guess the user may need to correct. */
+  encoding: SubtitleEncoding
 }
 
 interface SubtitleFileTranslations {
@@ -26,7 +37,8 @@ interface SubtitleFileTranslations {
 export type SubtitleFileRunState =
   | { status: "idle" }
   | { status: "running" }
-  | { status: "done" }
+  /** `errorMessage`: why the lines still untranslated failed, when some did. */
+  | { status: "done"; errorMessage: string | null }
   | { status: "error"; message: string }
 
 export const subtitleFileAtom = atom<LoadedSubtitleFile | null>(null)
@@ -89,6 +101,23 @@ export const setSubtitleFileAtom = atom(null, (_get, set, file: LoadedSubtitleFi
   set(subtitleFileRunStateAtom, { status: "idle" })
 })
 
+/**
+ * Re-reads the loaded file in another legacy encoding. Translations made from
+ * the garbled text are dropped with it. Returns an error message when the file
+ * no longer parses that way, and keeps the current reading.
+ */
+export const changeSubtitleFileEncodingAtom = atom(
+  null,
+  (get, set, encoding: LegacySubtitleEncoding): string | null => {
+    const file = get(subtitleFileAtom)
+    if (!file) return null
+    const result = loadSubtitleFile(file.name, file.bytes, encoding)
+    if ("error" in result) return result.error
+    set(setSubtitleFileAtom, result.file)
+    return null
+  },
+)
+
 export const cancelSubtitleFileTranslationAtom = atom(null, (_get, set) => {
   abortActiveRun()
   // What already came back stays, so "translate the rest" picks up from there.
@@ -128,7 +157,7 @@ export const translateSubtitleFileAtom = atom(null, async (get, set) => {
         enableLLM: get(configFieldsAtomMap.languageDetection).mode === "llm",
       })
     }
-    const { translations } = await translateSubtitleFile({
+    const { translations, stoppedEarly, errorMessage } = await translateSubtitleFile({
       title: file.name.replace(/\.[^.]+$/, ""),
       units: file.parsed.units,
       sourceCode,
@@ -140,7 +169,21 @@ export const translateSubtitleFileAtom = atom(null, async (get, set) => {
     })
     store(translations)
     if (activeController === controller) {
-      set(subtitleFileRunStateAtom, { status: "done" })
+      set(
+        subtitleFileRunStateAtom,
+        stoppedEarly
+          ? {
+              status: "error",
+              message: i18n.t("translationHub.subtitleFile.stopped", [
+                // The template ends the sentence itself.
+                (errorMessage ?? i18n.t("subtitles.errors.translatedExportIncomplete")).replace(
+                  /[.。!！]+$/,
+                  "",
+                ),
+              ]),
+            }
+          : { status: "done", errorMessage },
+      )
     }
   } catch (error) {
     if (activeController !== controller || controller.signal.aborted) return

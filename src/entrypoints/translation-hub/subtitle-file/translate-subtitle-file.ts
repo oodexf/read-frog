@@ -14,6 +14,13 @@ import {
 /** Same pace as the video export: the background queue owns the real rate limit. */
 const SUBTITLE_FILE_BATCH_CONCURRENCY = 2
 
+/**
+ * Two full windows in a row with nothing translated: the provider is down or
+ * refusing (a bad key, a spent quota), and the rest of the file would only
+ * queue up the same failure hundreds of times.
+ */
+const MAX_CONSECUTIVE_FAILED_BATCHES = SUBTITLE_FILE_BATCH_CONCURRENCY * 2
+
 export interface SubtitleFileTranslationRequest {
   /** Stands in for the video title in the prompt context. */
   title: string
@@ -36,6 +43,10 @@ export interface SubtitleFileTranslationResult {
   /** `translations[i]` belongs to `units[i]`; empty where the line failed. */
   translations: string[]
   failedCount: number
+  /** True when repeated failures ended the run before every line was tried. */
+  stoppedEarly: boolean
+  /** Why the last failed batch failed, for showing next to the untranslated count. */
+  errorMessage: string | null
 }
 
 export class SubtitleFileTranslationError extends Error {}
@@ -95,13 +106,32 @@ export async function translateSubtitleFile({
   const pendingIndexes = translations.flatMap((translation, index) => (translation ? [] : [index]))
   onProgress?.([...translations])
 
-  await translateFragmentsInBatches(
-    pendingIndexes.map((index) => ({ ...units[index]! })),
+  // A failed batch must not cost the batches around it: they keep their lines,
+  // the run moves on, and "translate the rest" resends only what is still empty.
+  let consecutiveFailedBatches = 0
+  let lastErrorMessage: string | null = null
+  const pendingFragments = pendingIndexes.map((index) => ({ ...units[index]! }))
+  const translatedFragments = await translateFragmentsInBatches(
+    pendingFragments,
     videoContext,
     config,
     {
       concurrency: SUBTITLE_FILE_BATCH_CONCURRENCY,
-      onBatchTranslated: () => signal?.throwIfAborted(),
+      onBatchTranslated: (_batch, translatedBatch) => {
+        signal?.throwIfAborted()
+        consecutiveFailedBatches = translatedBatch.some((fragment) => fragment.translation?.trim())
+          ? 0
+          : consecutiveFailedBatches + 1
+      },
+      onBatchFailed: (_batch, error) => {
+        signal?.throwIfAborted()
+        lastErrorMessage =
+          error instanceof Error && error.message
+            ? error.message
+            : i18n.t("subtitles.errors.translatedExportIncomplete")
+        consecutiveFailedBatches += 1
+      },
+      shouldStop: () => consecutiveFailedBatches >= MAX_CONSECUTIVE_FAILED_BATCHES,
       onProgress: (translated) => {
         signal?.throwIfAborted()
         translated.forEach((fragment, position) => {
@@ -115,5 +145,7 @@ export async function translateSubtitleFile({
   return {
     translations,
     failedCount: translations.filter((translation) => !translation).length,
+    stoppedEarly: translatedFragments.length < pendingFragments.length,
+    errorMessage: lastErrorMessage,
   }
 }

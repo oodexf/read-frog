@@ -1,3 +1,4 @@
+import type { LegacySubtitleEncoding } from "@/utils/subtitles/files"
 import { Icon } from "@iconify/react"
 import { saveAs } from "file-saver"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
@@ -6,20 +7,29 @@ import { Button } from "@/components/ui/base-ui/button"
 import { Label } from "@/components/ui/base-ui/label"
 import { Progress } from "@/components/ui/base-ui/progress"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/base-ui/radio-group"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/base-ui/select"
 import { Separator } from "@/components/ui/base-ui/separator"
 import { i18n } from "@/utils/i18n"
 import { getLanguageName } from "@/utils/language-labels"
 import { cn } from "@/utils/styles/utils"
 import {
   buildTranslatedSubtitleFileName,
-  decodeSubtitleBuffer,
-  parseSubtitleFile,
+  isLegacySubtitleEncoding,
+  LEGACY_SUBTITLE_ENCODINGS,
   SUBTITLE_FILE_EXTENSIONS,
   SUBTITLE_FILE_MIME_TYPES,
 } from "@/utils/subtitles/files"
 import { detectedSourceLangCodeAtom, sourceLangCodeAtom, targetLangCodeAtom } from "../atoms"
 import {
   cancelSubtitleFileTranslationAtom,
+  changeSubtitleFileEncodingAtom,
   setSubtitleFileAtom,
   subtitleFileAtom,
   subtitleFileDetectedSourceCodeAtom,
@@ -29,11 +39,16 @@ import {
   subtitleOutputOptionsAtom,
   translateSubtitleFileAtom,
 } from "./atoms"
-
-/** Far beyond any real subtitle track (a feature film's SRT is ~100 KB); guards against a wrong pick. */
-const MAX_SUBTITLE_FILE_BYTES = 5 * 1024 * 1024
+import { getSubtitleEncodingLabel } from "./encoding-labels"
+import { loadSubtitleFile } from "./load-subtitle-file"
 
 const FORMAT_LABELS = { srt: "SRT", vtt: "WebVTT", ass: "ASS/SSA" } as const
+
+/**
+ * Leads every download: desktop players on Windows otherwise guess a legacy
+ * code page and garble anything that isn't ASCII.
+ */
+const UTF8_BOM = String.fromCodePoint(0xfeff)
 
 export function SubtitleFileInput() {
   const file = useAtomValue(subtitleFileAtom)
@@ -48,30 +63,21 @@ function SubtitleFileDropzone() {
 
   const loadFile = async (picked: File) => {
     setError(null)
-    if (picked.size > MAX_SUBTITLE_FILE_BYTES) {
-      setError(i18n.t("translationHub.subtitleFile.errors.tooLarge"))
-      return
-    }
-
-    let text: string
+    let bytes: Uint8Array
     try {
       // Bytes, not `File.text()`: that one is UTF-8 only, and GBK subtitles are common.
-      text = decodeSubtitleBuffer(await picked.arrayBuffer())
+      bytes = new Uint8Array(await picked.arrayBuffer())
     } catch {
       setError(i18n.t("translationHub.subtitleFile.errors.readFailed"))
       return
     }
 
-    const parsed = parseSubtitleFile(picked.name, text)
-    if (!parsed) {
-      setError(i18n.t("translationHub.subtitleFile.errors.unsupported"))
+    const result = loadSubtitleFile(picked.name, bytes)
+    if ("error" in result) {
+      setError(result.error)
       return
     }
-    if (parsed.units.length === 0) {
-      setError(i18n.t("translationHub.subtitleFile.errors.noLines"))
-      return
-    }
-    setFile({ name: picked.name, parsed })
+    setFile(result.file)
   }
 
   return (
@@ -134,6 +140,8 @@ function SubtitleFileCard() {
   const targetLangCode = useAtomValue(targetLangCodeAtom)
   const detectedSourceLangCode = useAtomValue(detectedSourceLangCodeAtom)
   const runDetectedSourceCode = useAtomValue(subtitleFileDetectedSourceCodeAtom)
+  const changeEncoding = useSetAtom(changeSubtitleFileEncodingAtom)
+  const [encodingError, setEncodingError] = useState<string | null>(null)
   const optionId = useId()
 
   const { format, units } = file.parsed
@@ -144,9 +152,7 @@ function SubtitleFileCard() {
 
   const handleDownload = () => {
     const content = file.parsed.serialize(translations, options)
-    // With a BOM: desktop players on Windows otherwise guess a legacy code page
-    // and garble anything that isn't ASCII.
-    const blob = new Blob([`﻿${content}`], {
+    const blob = new Blob([UTF8_BOM, content], {
       type: `${SUBTITLE_FILE_MIME_TYPES[format]};charset=utf-8`,
     })
     saveAs(
@@ -166,9 +172,14 @@ function SubtitleFileCard() {
       ? runState.message
       : pendingCount === 0
         ? i18n.t("translationHub.subtitleFile.done", [total])
-        : translatedCount > 0
+        : translatedCount > 0 || runState.status === "done"
           ? i18n.t("translationHub.subtitleFile.partial", [pendingCount])
           : null
+  // Why the lines still untranslated failed, so "translate the rest" isn't a blind retry.
+  const failureReason =
+    runState.status === "done" && runState.errorMessage && pendingCount > 0
+      ? i18n.t("translationHub.subtitleFile.failureReason", [runState.errorMessage])
+      : null
 
   return (
     <div className="flex min-h-96 flex-col rounded-lg border bg-card">
@@ -204,6 +215,14 @@ function SubtitleFileCard() {
       <Separator />
 
       <div className="space-y-4 p-4">
+        {isLegacySubtitleEncoding(file.encoding) && (
+          <EncodingRow
+            encoding={file.encoding}
+            disabled={isRunning}
+            error={encodingError}
+            onChange={(encoding) => setEncodingError(changeEncoding(encoding))}
+          />
+        )}
         <OptionRow label={i18n.t("translationHub.subtitleFile.output")}>
           <RadioGroup
             value={options.mode}
@@ -252,6 +271,7 @@ function SubtitleFileCard() {
             {statusText}
           </p>
         )}
+        {failureReason && <p className="text-sm text-destructive">{failureReason}</p>}
         <div className="flex flex-wrap justify-end gap-2">
           {isRunning ? (
             <Button variant="outline" onClick={cancel}>
@@ -277,6 +297,62 @@ function SubtitleFileCard() {
           </Button>
         </div>
       </div>
+    </div>
+  )
+}
+
+function EncodingRow({
+  encoding,
+  disabled,
+  error,
+  onChange,
+}: {
+  encoding: LegacySubtitleEncoding
+  disabled: boolean
+  error: string | null
+  onChange: (encoding: LegacySubtitleEncoding) => void
+}) {
+  const items = LEGACY_SUBTITLE_ENCODINGS.map((value) => ({
+    value,
+    label: getSubtitleEncodingLabel(value),
+  }))
+
+  return (
+    <div className="space-y-2">
+      <OptionRow label={i18n.t("translationHub.subtitleFile.encoding")}>
+        <Select
+          items={items}
+          value={encoding}
+          disabled={disabled}
+          onValueChange={(value) => {
+            if (value) onChange(value)
+          }}
+        >
+          <SelectTrigger size="sm" className="w-60 min-w-0">
+            <SelectValue className="min-w-0">
+              <span className="truncate">{getSubtitleEncodingLabel(encoding)}</span>
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {items.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </OptionRow>
+      {/* Nothing in a legacy file names its code page, so the guess has to be
+          visible and correctable before anything garbled is sent off. */}
+      <p className="flex gap-1.5 text-sm text-warning">
+        <Icon icon="tabler:alert-triangle" className="mt-0.5 size-4 shrink-0" />
+        {i18n.t("translationHub.subtitleFile.encodingWarning", [
+          getSubtitleEncodingLabel(encoding),
+        ])}
+      </p>
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   )
 }

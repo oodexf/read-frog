@@ -5,7 +5,13 @@ import { parseAss } from "./ass"
 import { parseSrt } from "./srt"
 import { parseVtt } from "./vtt"
 
-export { decodeSubtitleBuffer } from "./decode"
+export {
+  decodeSubtitleBuffer,
+  guessLegacyEncoding,
+  isLegacySubtitleEncoding,
+  LEGACY_SUBTITLE_ENCODINGS,
+} from "./decode"
+export type { LegacySubtitleEncoding, SubtitleEncoding } from "./decode"
 export type * from "./types"
 
 export const SUBTITLE_FILE_EXTENSIONS = [".srt", ".vtt", ".ass", ".ssa"] as const
@@ -22,6 +28,9 @@ export const SUBTITLE_FILE_MIME_TYPES: Record<SubtitleFileFormat, string> = {
   vtt: "text/vtt",
   ass: "text/x-ssa",
 }
+
+/** Plain-text extensions a subtitle file is sometimes saved under; the download drops them. */
+const TEXT_EXTENSIONS = new Set(["txt", "text"])
 
 function splitFileName(fileName: string): { base: string; extension: string } {
   const dot = fileName.lastIndexOf(".")
@@ -68,7 +77,12 @@ function toFileLanguageTag(code: LangCodeISO6393): string {
   return ISO6393_TO_6391[code] ?? code
 }
 
-/** `movie.srt` becomes `movie.zh.srt`, or `movie.en-zh.srt` for a bilingual copy. */
+/**
+ * `movie.srt` becomes `movie.zh.srt`, or `movie.en-zh.srt` for a bilingual copy.
+ * The extension is always one players recognise: a subtitle extension is kept
+ * (`.ssa` stays `.ssa`), `.txt` gives way to the detected format's, and any
+ * other suffix (`Movie.1080p`) stays part of the name.
+ */
 export function buildTranslatedSubtitleFileName(
   fileName: string,
   {
@@ -84,8 +98,14 @@ export function buildTranslatedSubtitleFileName(
   },
 ): string {
   const { base, extension } = splitFileName(fileName)
+  const normalizedExtension = extension.toLowerCase()
+  const [name, outputExtension] = FORMAT_BY_EXTENSION[normalizedExtension]
+    ? [base, extension]
+    : TEXT_EXTENSIONS.has(normalizedExtension)
+      ? [base, format]
+      : [fileName, format]
   const target = toFileLanguageTag(targetCode)
   const languages =
     mode === "bilingual" && sourceCode ? `${toFileLanguageTag(sourceCode)}-${target}` : target
-  return `${base}.${languages}.${extension || format}`
+  return `${name}.${languages}.${outputExtension}`
 }

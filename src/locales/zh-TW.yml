@@ -1801,6 +1801,14 @@ translationHub:
     time: 時間
     original: 原文
     translation: 譯文
+    stopped: 已中斷：$1。已翻譯的行會保留，稍後可以繼續翻譯。
+    failureReason: 最近一次錯誤：$1
+    encoding: 編碼
+    encodingWarning: 這個檔案不是 UTF-8 編碼，已按 $1 讀取。如果預覽中的原文是亂碼，請換一種編碼。
+    encodings:
+      westernEuropean: 西歐語言
+      centralEuropean: 中歐語言
+      cyrillic: 西里爾文
     errors:
       unsupported: 無法辨識這個字幕檔案，請使用 SRT、VTT 或 ASS/SSA 格式。
       noLines: 檔案中找不到對白
