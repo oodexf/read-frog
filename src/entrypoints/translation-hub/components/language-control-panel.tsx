@@ -16,11 +16,17 @@ import {
 } from "../atoms"
 import { SearchableLanguageSelector } from "./searchable-language-selector"
 
-export function LanguageControlPanel() {
+interface LanguageControlPanelProps {
+  /** The text `auto` is detected from; defaults to the text tab's input. */
+  detectionText?: string
+}
+
+export function LanguageControlPanel({ detectionText }: LanguageControlPanelProps) {
   const [sourceLangCode, setSourceLangCode] = useAtom(sourceLangCodeAtom)
   const [targetLangCode, setTargetLangCode] = useAtom(targetLangCodeAtom)
   const exchangeLangCodes = useSetAtom(exchangeLangCodesAtom)
   const inputText = useAtomValue(inputTextAtom)
+  const textToDetect = detectionText ?? inputText
   const setDetectedSourceLangCode = useSetAtom(detectedSourceLangCodeAtom)
   const detectedLangCode = useAtomValue(detectedLangCodeAtom)
   const languageDetection = useAtomValue(configFieldsAtomMap.languageDetection)
@@ -40,9 +46,9 @@ export function LanguageControlPanel() {
   )
 
   useEffect(() => {
-    void debouncedDetect(inputText)
+    void debouncedDetect(textToDetect)
     return () => debouncedDetect.clear()
-  }, [inputText, debouncedDetect])
+  }, [textToDetect, debouncedDetect])
 
   return (
     <div className="flex w-full items-center gap-3">

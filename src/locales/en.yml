@@ -1911,6 +1911,39 @@ translationHub:
   translationFailed: Translation Failed
   translationFailedFallback: Translation failed
   retryTranslation: Retry translation
+  tabs:
+    text: Text
+    subtitleFile: Subtitle file
+  subtitleFile:
+    dropTitle: Drop a subtitle file here
+    dropDescription: or click to choose one · SRT, VTT, ASS/SSA
+    remove: Remove file
+    lineCount: $1 lines
+    providerHint: Uses the video subtitles translation service, and the glossary and AI context settings that go with it.
+    output: Output
+    bilingual: Bilingual
+    translationOnly: Translation only
+    translationPosition: Translation
+    below: Below the original
+    above: Above the original
+    translate: Translate
+    continue: Translate the remaining $1 lines
+    cancel: Cancel
+    download: Download
+    progress: Translating $1 / $2
+    done: All $1 lines translated
+    partial: $1 lines not translated yet. They keep their original text if you download now.
+    previewEmpty: Translations appear here
+    previewEmptyDescription: Upload a subtitle file to preview it line by line
+    time: Time
+    original: Original
+    translation: Translation
+    errors:
+      unsupported: This isn't a subtitle file Read Frog can read. Use SRT, VTT or ASS/SSA.
+      noLines: No dialogue found in this file
+      tooLarge: The file is larger than 5 MB
+      readFailed: Couldn't read the file
+      noProvider: Choose a translation service for video subtitles first
 languages:
   eng: English
   cmn: Simplified Chinese

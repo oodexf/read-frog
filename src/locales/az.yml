@@ -1727,6 +1727,39 @@ translationHub:
   translationFailed: Tərcümə alınmadı
   translationFailedFallback: Tərcümə alınmadı
   retryTranslation: Yenidən tərcümə et
+  tabs:
+    text: Mətn
+    subtitleFile: Altyazı faylı
+  subtitleFile:
+    dropTitle: Altyazı faylını bura atın
+    dropDescription: və ya seçmək üçün klikləyin · SRT, VTT, ASS/SSA
+    remove: Faylı sil
+    lineCount: $1 sətir
+    providerHint: Video altyazılarının tərcümə xidmətindən, onun lüğətindən və süni intellekt kontekst ayarlarından istifadə edir.
+    output: Çıxış
+    bilingual: İkidilli
+    translationOnly: Yalnız tərcümə
+    translationPosition: Tərcümənin yeri
+    below: Orijinalın altında
+    above: Orijinalın üstündə
+    translate: Tərcümə et
+    continue: Qalan $1 sətri tərcümə et
+    cancel: Ləğv et
+    download: Endir
+    progress: Tərcümə olunur $1 / $2
+    done: Bütün $1 sətir tərcümə olundu
+    partial: $1 sətir hələ tərcümə olunmayıb. İndi endirsəniz, bu sətirlər orijinal mətndə qalacaq.
+    previewEmpty: Tərcümələr burada görünəcək
+    previewEmptyDescription: Sətir-sətir baxmaq üçün altyazı faylı yükləyin
+    time: Vaxt
+    original: Orijinal
+    translation: Tərcümə
+    errors:
+      unsupported: Read Frog bu altyazı faylını oxuya bilmir. SRT, VTT və ya ASS/SSA istifadə edin.
+      noLines: Bu faylda dialoq tapılmadı
+      tooLarge: Fayl 5 MB-dan böyükdür
+      readFailed: Faylı oxumaq mümkün olmadı
+      noProvider: Əvvəlcə video altyazıları üçün tərcümə xidməti seçin
 languages:
   eng: İngilis dili
   cmn: Sadələşdirilmiş çin dili

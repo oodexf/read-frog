@@ -1729,6 +1729,39 @@ translationHub:
   translationFailed: 번역 실패
   translationFailedFallback: 번역 실패
   retryTranslation: 번역 재시도
+  tabs:
+    text: 텍스트
+    subtitleFile: 자막 파일
+  subtitleFile:
+    dropTitle: 자막 파일을 여기에 놓으세요
+    dropDescription: 또는 클릭해서 선택 · SRT, VTT, ASS/SSA 지원
+    remove: 파일 제거
+    lineCount: $1줄
+    providerHint: 동영상 자막 번역 서비스와 그에 연결된 용어집, AI 컨텍스트 설정을 사용합니다.
+    output: 출력
+    bilingual: 이중 언어
+    translationOnly: 번역문만
+    translationPosition: 번역문 위치
+    below: 원문 아래
+    above: 원문 위
+    translate: 번역
+    continue: 남은 $1줄 번역
+    cancel: 취소
+    download: 다운로드
+    progress: 번역 중 $1 / $2
+    done: $1줄 모두 번역됨
+    partial: 아직 번역되지 않은 줄이 $1개 있습니다. 지금 다운로드하면 해당 줄은 원문으로 남습니다.
+    previewEmpty: 번역문이 여기에 표시됩니다
+    previewEmptyDescription: 자막 파일을 업로드하면 한 줄씩 미리 볼 수 있습니다
+    time: 시간
+    original: 원문
+    translation: 번역문
+    errors:
+      unsupported: Read Frog가 읽을 수 없는 자막 파일입니다. SRT, VTT, ASS/SSA를 사용하세요.
+      noLines: 이 파일에서 대사를 찾을 수 없습니다
+      tooLarge: 파일이 5MB를 초과합니다
+      readFailed: 파일을 읽을 수 없습니다
+      noProvider: 먼저 동영상 자막 번역 서비스를 선택하세요
 languages:
   eng: 영어
   cmn: 중국어 간체

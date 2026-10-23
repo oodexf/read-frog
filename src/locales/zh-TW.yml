@@ -1774,6 +1774,39 @@ translationHub:
   translationFailed: 翻譯失敗
   translationFailedFallback: 翻譯失敗
   retryTranslation: 重試翻譯
+  tabs:
+    text: 文字
+    subtitleFile: 字幕檔案
+  subtitleFile:
+    dropTitle: 將字幕檔案拖放到這裡
+    dropDescription: 或點擊選擇檔案 · 支援 SRT、VTT、ASS/SSA
+    remove: 移除檔案
+    lineCount: $1 行
+    providerHint: 使用影片字幕的翻譯服務，以及對應的術語庫和 AI 上下文設定。
+    output: 輸出
+    bilingual: 雙語
+    translationOnly: 僅譯文
+    translationPosition: 譯文位置
+    below: 原文下方
+    above: 原文上方
+    translate: 翻譯
+    continue: 翻譯剩餘 $1 行
+    cancel: 取消
+    download: 下載
+    progress: 正在翻譯 $1 / $2
+    done: 全部 $1 行已翻譯
+    partial: 還有 $1 行尚未翻譯，現在下載的話這些行會保留原文。
+    previewEmpty: 譯文會顯示在這裡
+    previewEmptyDescription: 上傳字幕檔案後可以逐行預覽
+    time: 時間
+    original: 原文
+    translation: 譯文
+    errors:
+      unsupported: 無法辨識這個字幕檔案，請使用 SRT、VTT 或 ASS/SSA 格式。
+      noLines: 檔案中找不到對白
+      tooLarge: 檔案超過 5 MB
+      readFailed: 無法讀取檔案
+      noProvider: 請先為影片字幕選擇翻譯服務
 languages:
   eng: 英語
   cmn: 簡體中文

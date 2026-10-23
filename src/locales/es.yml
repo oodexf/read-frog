@@ -1734,6 +1734,39 @@ translationHub:
   translationFailed: Falló la traducción
   translationFailedFallback: Falló la traducción
   retryTranslation: Reintentar traducción
+  tabs:
+    text: Texto
+    subtitleFile: Archivo de subtítulos
+  subtitleFile:
+    dropTitle: Suelta aquí un archivo de subtítulos
+    dropDescription: o haz clic para elegir uno · SRT, VTT, ASS/SSA
+    remove: Quitar archivo
+    lineCount: $1 líneas
+    providerHint: Usa el servicio de traducción de subtítulos de vídeo, con su glosario y su configuración de contexto de IA.
+    output: Salida
+    bilingual: Bilingüe
+    translationOnly: Solo traducción
+    translationPosition: Traducción
+    below: Debajo del original
+    above: Encima del original
+    translate: Traducir
+    continue: Traducir las $1 líneas restantes
+    cancel: Cancelar
+    download: Descargar
+    progress: Traduciendo $1 / $2
+    done: Las $1 líneas están traducidas
+    partial: Faltan $1 líneas por traducir. Si descargas ahora, conservarán el texto original.
+    previewEmpty: Las traducciones aparecerán aquí
+    previewEmptyDescription: Sube un archivo de subtítulos para verlo línea a línea
+    time: Tiempo
+    original: Original
+    translation: Traducción
+    errors:
+      unsupported: Read Frog no puede leer este archivo de subtítulos. Usa SRT, VTT o ASS/SSA.
+      noLines: No se encontraron diálogos en este archivo
+      tooLarge: El archivo supera los 5 MB
+      readFailed: No se pudo leer el archivo
+      noProvider: Elige primero un servicio de traducción para los subtítulos de vídeo
 languages:
   eng: Inglés
   cmn: Chino simplificado
