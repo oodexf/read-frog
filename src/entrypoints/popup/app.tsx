@@ -11,6 +11,7 @@ import { DiscordButton } from "./components/discord-button"
 import LanguageOptionsSelector from "./components/language-options-selector"
 import { MoreMenu } from "./components/more-menu"
 import Hotkey from "./components/node-translation-hotkey-selector"
+import { PopupBrand } from "./components/popup-brand"
 import ProvidersField from "./components/providers-field"
 import { SiteControlToggle } from "./components/site-control-toggle"
 import { StoreReviewPrompt } from "./components/store-review-prompt"
@@ -28,9 +29,10 @@ function App() {
               whatever is left of the 320px popup is its width, and a long display
               name ellipses inside that instead of pushing the icons off. */}
           <div className="flex items-center justify-between gap-2">
-            {!env.WXT_LOCAL_ONLY && <UserAccountMenuPopup />}
-            {/* ml-auto keeps the icons on the right when there is no account menu. */}
-            <div className="ml-auto flex shrink-0 items-center">
+            {env.WXT_LOCAL_ONLY ? <PopupBrand /> : <UserAccountMenuPopup />}
+            {/* -mr-2 cancels the icon buttons' own padding so the last glyph lines up
+                with the right edge of the controls below. */}
+            <div className="-mr-2 flex shrink-0 items-center">
               <TranslationHubButton />
               <DiscordButton />
               {!env.WXT_LOCAL_ONLY && <BlogNotification />}
