@@ -23,7 +23,7 @@ import {
   buildTranslatedSubtitleFileName,
   isLegacySubtitleEncoding,
   LEGACY_SUBTITLE_ENCODINGS,
-  SUBTITLE_FILE_EXTENSIONS,
+  SUBTITLE_FILE_PICKER_ACCEPT,
   SUBTITLE_FILE_MIME_TYPES,
 } from "@/utils/subtitles/files"
 import { detectedSourceLangCodeAtom, sourceLangCodeAtom, targetLangCodeAtom } from "../atoms"
@@ -96,7 +96,7 @@ function SubtitleFileDropzone() {
           if (dropped) void loadFile(dropped)
         }}
         className={cn(
-          "flex h-96 cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-input px-6 text-center transition-colors hover:bg-muted/50",
+          "flex h-96 cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-input px-6 text-center transition-colors outline-none hover:bg-muted/50 has-[:focus-visible]:border-ring has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50",
           isDragging && "border-primary bg-primary/5",
         )}
       >
@@ -109,11 +109,13 @@ function SubtitleFileDropzone() {
             {i18n.t("translationHub.subtitleFile.dropDescription")}
           </p>
         </div>
+        {/* sr-only rather than hidden: a display:none input can't take focus, and
+            then keyboard users have no way to open the picker. */}
         <input
           id={inputId}
           type="file"
-          accept={SUBTITLE_FILE_EXTENSIONS.join(",")}
-          className="hidden"
+          accept={SUBTITLE_FILE_PICKER_ACCEPT}
+          className="sr-only"
           onChange={(event) => {
             const picked = event.target.files?.[0]
             // Cleared so picking the same file again after an error still fires.

@@ -238,6 +238,8 @@ const CP1251_RUSSIAN = new Uint8Array([
 const GBK_CHINESE = new Uint8Array([0xc4, 0xe3, 0xba, 0xc3, 0xa3, 0xac, 0xca, 0xc0, 0xbd, 0xe7])
 // "你好" in Big5.
 const BIG5_CHINESE = new Uint8Array([0xa7, 0x41, 0xa6, 0x6e])
+// "Şimdi ağır" in Windows-1254; read as 1252 it is the plausible "Þimdi aðýr".
+const CP1254_TURKISH = new Uint8Array([0xde, 0x69, 0x6d, 0x64, 0x69, 0x20, 0x61, 0xf0, 0xfd, 0x72])
 
 describe("decodeSubtitleBuffer", () => {
   it("reads UTF-8 and strips the BOM and carriage returns", () => {
@@ -283,6 +285,22 @@ describe("decodeSubtitleBuffer", () => {
   it("tries the UI language's own code page first", () => {
     expect(guessLegacyEncoding(BIG5_CHINESE, "zh-TW")).toBe("big5")
     expect(decodeSubtitleBuffer(BIG5_CHINESE, { uiLocale: "zh-TW" }).text).toBe("你好")
+  })
+
+  it("reads Latin text in the UI language's own code page rather than Windows-1252", () => {
+    expect(decodeSubtitleBuffer(CP1254_TURKISH, { uiLocale: "tr" })).toMatchObject({
+      text: "Şimdi ağır",
+      encoding: "windows-1254",
+    })
+    // Without that hint, Western European is the likelier reading.
+    expect(guessLegacyEncoding(CP1254_TURKISH, "en")).toBe("windows-1252")
+  })
+
+  it("does not let a single-byte UI code page claim CJK files", () => {
+    // Windows-1251 decodes any byte, so put first it would win every time.
+    expect(guessLegacyEncoding(GBK_CHINESE, "ru")).toBe("gb18030")
+    expect(guessLegacyEncoding(GBK_CHINESE, "tr")).toBe("gb18030")
+    expect(guessLegacyEncoding(CP1251_RUSSIAN, "ru")).toBe("windows-1251")
   })
 
   it("reads with the encoding the user picked", () => {

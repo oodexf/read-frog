@@ -16,6 +16,9 @@ export type * from "./types"
 
 export const SUBTITLE_FILE_EXTENSIONS = [".srt", ".vtt", ".ass", ".ssa"] as const
 
+/** What the file picker offers: subtitle files, plus `.txt`, which is recognised by content. */
+export const SUBTITLE_FILE_PICKER_ACCEPT = [...SUBTITLE_FILE_EXTENSIONS, ".txt"].join(",")
+
 const FORMAT_BY_EXTENSION: Record<string, SubtitleFileFormat> = {
   srt: "srt",
   vtt: "vtt",

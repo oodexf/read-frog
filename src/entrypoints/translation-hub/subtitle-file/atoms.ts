@@ -139,6 +139,14 @@ export const translateSubtitleFileAtom = atom(null, async (get, set) => {
   let detectedSourceCode: LangCodeISO6393 | null = null
   const store = (values: readonly string[]) => {
     if (activeController !== controller) return
+    // The user picked other languages mid-run: these lines would be hidden as
+    // stale, so the rest of the run would only spend requests on a pair nobody
+    // is looking at.
+    if (get(sourceLangCodeAtom) !== sourceCode || get(targetLangCodeAtom) !== targetCode) {
+      abortActiveRun()
+      set(subtitleFileRunStateAtom, { status: "idle" })
+      return
+    }
     set(subtitleFileTranslationsStoreAtom, {
       sourceCode,
       targetCode,

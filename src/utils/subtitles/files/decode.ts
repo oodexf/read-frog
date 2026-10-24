@@ -39,21 +39,33 @@ export interface DecodedSubtitleFile {
   isLegacy: boolean
 }
 
-/** The code page a UI language's own subtitles most likely use, tried first. */
-const PREFERRED_ENCODING_BY_LOCALE: ReadonlyArray<[RegExp, LegacySubtitleEncoding]> = [
+/**
+ * The multi-byte code page a CJK UI language's own subtitles most likely use.
+ * Tried first: where several CJK code pages decode the same bytes cleanly,
+ * the reader's own language is the better bet.
+ */
+const PREFERRED_CJK_ENCODING_BY_LOCALE: ReadonlyArray<[RegExp, LegacySubtitleEncoding]> = [
   [/^zh-(?:tw|hk|mo|hant)/i, "big5"],
   [/^zh/i, "gb18030"],
   [/^ja/i, "shift_jis"],
   [/^ko/i, "euc-kr"],
-  [/^(?:ru|uk|be|bg|sr|mk)/i, "windows-1251"],
-  [/^tr|^az/i, "windows-1254"],
+]
+
+/**
+ * The Latin-script code page of a UI language whose text also reads as
+ * plausible Windows-1252 (`ş` as `þ`, `ğ` as `ð`), and so can only be told
+ * apart by who is reading.
+ */
+const PREFERRED_LATIN_ENCODING_BY_LOCALE: ReadonlyArray<[RegExp, LegacySubtitleEncoding]> = [
+  [/^(?:tr|az)/i, "windows-1254"],
   [/^vi/i, "windows-1258"],
 ]
 
 /**
  * Multi-byte encodings first: they reject byte sequences they don't define,
  * so a wrong one shows up as U+FFFD. Single-byte code pages accept any byte
- * and so can only come last.
+ * and so can only come last; Cyrillic still lands on 1251, because its
+ * odd-length words leave a CJK lead byte in front of a space.
  */
 const FALLBACK_ENCODING_ORDER: readonly LegacySubtitleEncoding[] = [
   "gb18030",
@@ -103,13 +115,16 @@ export function guessLegacyEncoding(
   bytes: Uint8Array,
   uiLocale?: string | null,
 ): LegacySubtitleEncoding {
+  const preferredFor = (table: ReadonlyArray<[RegExp, LegacySubtitleEncoding]>) =>
+    uiLocale ? table.find(([pattern]) => pattern.test(uiLocale))?.[1] : undefined
+
   if (looksLikeWesternEuropeanText(new TextDecoder("windows-1252").decode(bytes))) {
-    return "windows-1252"
+    return preferredFor(PREFERRED_LATIN_ENCODING_BY_LOCALE) ?? "windows-1252"
   }
 
-  const preferred = uiLocale
-    ? PREFERRED_ENCODING_BY_LOCALE.find(([pattern]) => pattern.test(uiLocale))?.[1]
-    : undefined
+  // Only a multi-byte preference may jump the queue: a single-byte one never
+  // fails to decode, so it would win for every file, CJK ones included.
+  const preferred = preferredFor(PREFERRED_CJK_ENCODING_BY_LOCALE)
   const candidates = preferred
     ? [preferred, ...FALLBACK_ENCODING_ORDER.filter((encoding) => encoding !== preferred)]
     : FALLBACK_ENCODING_ORDER
