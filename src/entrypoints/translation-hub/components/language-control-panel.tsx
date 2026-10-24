@@ -1,48 +1,29 @@
 import { Icon } from "@iconify/react"
-import debounce from "debounce"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
-import { useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/base-ui/button"
-import { configFieldsAtomMap } from "@/utils/atoms/config"
-import { detectLanguage } from "@/utils/content/language"
 import { i18n } from "@/utils/i18n"
 import {
   detectedLangCodeAtom,
-  detectedSourceLangCodeAtom,
   exchangeLangCodesAtom,
   inputTextAtom,
   sourceLangCodeAtom,
   targetLangCodeAtom,
 } from "../atoms"
 import { SearchableLanguageSelector } from "./searchable-language-selector"
+import { useSourceLanguageDetection } from "./use-source-language-detection"
 
-export function LanguageControlPanel() {
+interface LanguageControlPanelProps {
+  /** The text `auto` is detected from; defaults to the text tab's input. */
+  detectionText?: string
+}
+
+export function LanguageControlPanel({ detectionText }: LanguageControlPanelProps) {
   const [sourceLangCode, setSourceLangCode] = useAtom(sourceLangCodeAtom)
   const [targetLangCode, setTargetLangCode] = useAtom(targetLangCodeAtom)
   const exchangeLangCodes = useSetAtom(exchangeLangCodesAtom)
   const inputText = useAtomValue(inputTextAtom)
-  const setDetectedSourceLangCode = useSetAtom(detectedSourceLangCodeAtom)
   const detectedLangCode = useAtomValue(detectedLangCodeAtom)
-  const languageDetection = useAtomValue(configFieldsAtomMap.languageDetection)
-
-  // Debounced language detection from input text
-  const enableLLM = languageDetection.mode === "llm"
-  const debouncedDetect = useMemo(
-    () =>
-      debounce(async (text: string) => {
-        const detected = await detectLanguage(text, {
-          minLength: 1,
-          enableLLM,
-        })
-        setDetectedSourceLangCode(detected)
-      }, 1000),
-    [setDetectedSourceLangCode, enableLLM],
-  )
-
-  useEffect(() => {
-    void debouncedDetect(inputText)
-    return () => debouncedDetect.clear()
-  }, [inputText, debouncedDetect])
+  useSourceLanguageDetection(detectionText ?? inputText)
 
   return (
     <div className="flex w-full items-center gap-3">

@@ -1729,6 +1729,47 @@ translationHub:
   translationFailed: Ошибка перевода
   translationFailedFallback: Ошибка перевода
   retryTranslation: Повторить перевод
+  tabs:
+    text: Текст
+    subtitleFile: Файл субтитров
+  subtitleFile:
+    dropTitle: Перетащите файл субтитров сюда
+    dropDescription: или нажмите, чтобы выбрать · SRT, VTT, ASS/SSA
+    remove: Удалить файл
+    lineCount: "Строк: $1"
+    providerHint: Использует сервис перевода видеосубтитров вместе с его глоссарием и настройками контекста ИИ.
+    output: Вывод
+    bilingual: Двуязычные
+    translationOnly: Только перевод
+    translationPosition: Перевод
+    below: Под оригиналом
+    above: Над оригиналом
+    translate: Перевести
+    continue: Перевести оставшиеся строки ($1)
+    cancel: Отмена
+    download: Скачать
+    progress: Перевод $1 / $2
+    done: Переведены все строки ($1)
+    partial: "Не переведено строк: $1. Если скачать сейчас, в них останется исходный текст."
+    previewEmpty: Здесь появится перевод
+    previewEmptyDescription: Загрузите файл субтитров, чтобы просмотреть его построчно
+    time: Время
+    original: Оригинал
+    translation: Перевод
+    stopped: "Остановлено: $1. Уже переведённые строки сохранены, можно продолжить позже."
+    failureReason: "Последняя ошибка: $1"
+    encoding: Кодировка
+    encodingWarning: Файл не в UTF-8, поэтому он прочитан как $1. Если исходный текст в предпросмотре выглядит как набор символов, выберите другую кодировку.
+    encodings:
+      westernEuropean: Западноевропейская
+      centralEuropean: Центральноевропейская
+      cyrillic: Кириллица
+    errors:
+      unsupported: Read Frog не может прочитать этот файл субтитров. Используйте SRT, VTT или ASS/SSA.
+      noLines: В файле не найдено реплик
+      tooLarge: Файл больше 5 МБ
+      readFailed: Не удалось прочитать файл
+      noProvider: Сначала выберите сервис перевода для видеосубтитров
 languages:
   eng: Английский
   cmn: Упрощённый китайский

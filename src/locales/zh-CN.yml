@@ -1774,6 +1774,47 @@ translationHub:
   translationFailed: 翻译失败
   translationFailedFallback: 翻译失败
   retryTranslation: 重试翻译
+  tabs:
+    text: 文本
+    subtitleFile: 字幕文件
+  subtitleFile:
+    dropTitle: 拖放字幕文件到这里
+    dropDescription: 或点击选择文件 · 支持 SRT、VTT、ASS/SSA
+    remove: 移除文件
+    lineCount: $1 条
+    providerHint: 使用视频字幕的翻译服务，以及对应的术语库和 AI 上下文设置。
+    output: 输出
+    bilingual: 双语
+    translationOnly: 仅译文
+    translationPosition: 译文位置
+    below: 原文下方
+    above: 原文上方
+    translate: 翻译
+    continue: 翻译剩余 $1 条
+    cancel: 取消
+    download: 下载
+    progress: 正在翻译 $1 / $2
+    done: 全部 $1 条已翻译
+    partial: 还有 $1 条未翻译，现在下载的话这些行会保留原文。
+    previewEmpty: 译文会显示在这里
+    previewEmptyDescription: 上传字幕文件后可以逐行预览
+    time: 时间
+    original: 原文
+    translation: 译文
+    stopped: 已中断：$1。已翻译的行会保留，稍后可以继续翻译。
+    failureReason: 最近一次错误：$1
+    encoding: 编码
+    encodingWarning: 这个文件不是 UTF-8 编码，已按 $1 读取。如果预览里的原文是乱码，请换一种编码。
+    encodings:
+      westernEuropean: 西欧语言
+      centralEuropean: 中欧语言
+      cyrillic: 西里尔文
+    errors:
+      unsupported: 无法识别这个字幕文件，请使用 SRT、VTT 或 ASS/SSA 格式。
+      noLines: 文件里没有找到对白
+      tooLarge: 文件超过 5 MB
+      readFailed: 无法读取文件
+      noProvider: 请先为视频字幕选择一个翻译服务
 languages:
   eng: 英语
   cmn: 简体中文

@@ -1729,6 +1729,47 @@ translationHub:
   translationFailed: Çeviri Başarısız
   translationFailedFallback: Çeviri başarısız
   retryTranslation: Çeviriyi yeniden dene
+  tabs:
+    text: Metin
+    subtitleFile: Altyazı dosyası
+  subtitleFile:
+    dropTitle: Altyazı dosyasını buraya bırakın
+    dropDescription: veya seçmek için tıklayın · SRT, VTT, ASS/SSA
+    remove: Dosyayı kaldır
+    lineCount: $1 satır
+    providerHint: Video altyazılarının çeviri hizmetini, sözlüğünü ve yapay zekâ bağlam ayarlarını kullanır.
+    output: Çıktı
+    bilingual: İki dilli
+    translationOnly: Yalnızca çeviri
+    translationPosition: Çeviri konumu
+    below: Orijinalin altında
+    above: Orijinalin üstünde
+    translate: Çevir
+    continue: Kalan $1 satırı çevir
+    cancel: İptal
+    download: İndir
+    progress: Çevriliyor $1 / $2
+    done: $1 satırın tümü çevrildi
+    partial: $1 satır henüz çevrilmedi. Şimdi indirirseniz bu satırlar orijinal metinde kalır.
+    previewEmpty: Çeviriler burada görünecek
+    previewEmptyDescription: Satır satır önizlemek için bir altyazı dosyası yükleyin
+    time: Zaman
+    original: Orijinal
+    translation: Çeviri
+    stopped: "Durduruldu: $1. Çevrilmiş satırlar korunur; daha sonra devam edebilirsiniz."
+    failureReason: "Son hata: $1"
+    encoding: Kodlama
+    encodingWarning: Bu dosya UTF-8 değil, bu yüzden $1 olarak okundu. Önizlemedeki orijinal metin bozuk görünüyorsa başka bir kodlama seçin.
+    encodings:
+      westernEuropean: Batı Avrupa
+      centralEuropean: Orta Avrupa
+      cyrillic: Kiril
+    errors:
+      unsupported: Bu, Read Frog'un okuyabildiği bir altyazı dosyası değil. SRT, VTT veya ASS/SSA kullanın.
+      noLines: Bu dosyada diyalog bulunamadı
+      tooLarge: Dosya 5 MB'tan büyük
+      readFailed: Dosya okunamadı
+      noProvider: Önce video altyazıları için bir çeviri hizmeti seçin
 languages:
   eng: İngilizce
   cmn: Basitleştirilmiş Çince
